@@ -12,22 +12,28 @@ JadeAI 是一个 AI 驱动的简历与求职工作台（Next.js / React / TypeSc
 - PDF 快照导出：POST 请求携带当前编辑器状态（含未保存的分节顺序），无需先保存即可导出；限制 2 MiB、10s 上传与 35s 渲染超时，并限制并发渲染为 2。
 - 导出请求支持取消与整体超时；Chromium 启动、渲染、关闭均有超时与 SIGKILL 兜底，避免挂起进程泄漏。
 - 连续长页导出会移除末尾空白页，同时保留纯图片/背景页。
+- 单用户模式新增 `JADE_SINGLE_USER=true`，固定映射到本地用户；`JADE_RUNTIME=desktop` 保留为兼容别名。
+- 新增 `JADE_HOME=dashboard`：设置后访问首页直接进入工作台，默认仍展示 landing。
+- 新增 `FEATURE_RECRUIT=false`：关闭招聘入口并将 `/recruit` 重定向到工作台，路由与数据表保留。
+- 新增 `pnpm db:backup`：使用 SQLite 在线备份生成一致性快照，默认保留 14 份。
+- PDF 导出复用共享 Chromium 实例，空闲 10 分钟自动回收并在进程退出时清理；A4/连续长页与并发闸门不变。
+- 简历预览模板改为按需加载，landing 首屏 JS 从 1371.7 KB 降至 912.8 KB。
 
 ### 变更
 
 - 匿名模式下 AI 与简历相关接口的限流改为按客户端地址分桶，不再信任可伪造的 `x-fingerprint`；反向代理部署需设置 `TRUST_PROXY=true` 才能按真实 IP 分桶。
 - AI 模型切换改为每次发送时读取最新选择，不再受会话 transport 缓存影响。
 - 官网落地页导航新增「招聘」入口（桌面端与移动端），同步上游并补齐中英文案。
-
-### 变更
-
 - 同步上游至 2026-09-03：仅采纳 landing 招聘导航入口，不采纳 LaunchAI 推广徽章与 `.gitignore` 等价改写；新增 fork 维护手册 `docs/fork-notes.md` 与每周上游同步提醒 workflow。
+- 升级 drizzle-orm 0.45.4、zod 4.6.7、next-intl 4.14.9，并适配 zod 4 对 transform 输出必填的语义。
 - 构建链（tsconfig/eslint）排除 gitignored 的 AI 工具目录（`.agents/`、`agent/`、`data/`），本地全量校验不再被这些目录的脚本打断。
 - 同步上游 217 个提交，并入面试官侧招聘模块与 Electron 桌面客户端；随后移除桌面客户端，重新聚焦 Docker Web 部署。
 - README 本土化为纯中文，移除英文版与废弃的 zh-CN README，并补充 OrcaRouter 等 AI 提供商配置说明；整理仓库忽略规则，停止追踪 AI 工具产物。
 
 ### 修复
 
+- 构建：移除 `next/font/google` 的构建期网络依赖，改用本地 Inter 字体并补齐 sans/mono 回退栈；离线或受限网络下的 Docker 构建不再访问 `fonts.gstatic.com`。
+- Docker：`docker:smoke` 支持 `DOCKER_BUILD_NETWORK=host`，便于 WSL/受限网络下构建；默认 bridge 行为不变。
 - PDF 智能一页：修正字号缩放与 CSS zoom 叠加导致的过度缩小；失败时恢复原始排版并返回 `X-PDF-Fit-One-Page: failed` 响应头，客户端会提示「已按标准分页导出」，不再静默当作成功。
 - PDF 字体：预览端主题字体不再被模板内联 `font-family` 覆盖，选字体在预览与导出中保持一致。
 - 数据库迁移：修正 recruit 迁移时间戳倒序导致 drizzle 静默跳过 `recruit_jobs` 表的问题（SQLite 与 PostgreSQL）。
