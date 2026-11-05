@@ -277,6 +277,26 @@ IMAGE_REPOSITORY=shuai0/jadeai pnpm docker:publish
 PUSH=false PLATFORMS=linux/amd64 IMAGE_REPOSITORY=shuai0/jadeai pnpm docker:publish
 ```
 
+### 数据备份与恢复
+
+SQLite 使用 WAL 模式，运行中直接复制 `jade.db` 可能得到不一致快照。请使用内置备份命令（SQLite online backup API）：
+
+```bash
+# 默认读取 ./data/jade.db，写入 ./data/backups，保留最近 14 份
+pnpm db:backup
+
+# 自定义路径与保留数量
+SQLITE_PATH=/path/to/jade.db BACKUP_DIR=/path/to/backups BACKUP_KEEP=30 pnpm db:backup
+```
+
+每条备份都会执行 `PRAGMA integrity_check`，失败时命令以非零退出。恢复步骤：
+
+1. 停止容器或进程；
+2. 把备份文件复制为 `jade.db`，并删除同目录的 `jade.db-wal`、`jade.db-shm`；
+3. 启动后核对简历数量，必要时运行 `PRAGMA integrity_check`。
+
+> 使用 Docker 命名卷时，建议改用 `DATA_DIR="$(pwd)/jadeai-data" pnpm docker:run`，让数据库落在宿主机目录，便于直接执行 `SQLITE_PATH=... pnpm db:backup`。PostgreSQL 请使用 `pg_dump -Fc`。
+
 ### 本地开发
 
 ```bash
@@ -428,6 +448,7 @@ src/
 | `pnpm db:generate:pg` | 生成 PostgreSQL 迁移 |
 | `pnpm db:migrate` | 执行迁移 |
 | `pnpm db:seed` | 填充示例数据 |
+| `pnpm db:backup` | 创建 SQLite 一致性备份并清理旧备份 |
 
 ## 截图
 
