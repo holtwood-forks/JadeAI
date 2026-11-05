@@ -6,6 +6,7 @@ import { QUESTION_COUNT_MAX, QUESTION_COUNT_MIN } from '@/types/recruit';
 /** 模型经常把数组字段整个漏掉或给成 null，统一补成空数组。 */
 const stringArray = z
   .union([z.array(z.string()), z.null(), z.undefined()])
+  .optional()
   .transform((v) => v ?? []);
 
 /** 分数钳到 0-100。模型偶尔给 120 或 -5，为此丢掉整份评价不值得。 */
@@ -25,6 +26,7 @@ export const dimensionConfigSchema = z.object({
   // 设成必填的话，老岗位一存就 400。
   description: z
     .union([z.string(), z.null(), z.undefined()])
+    .optional()
     .transform((v) => v ?? '')
     .pipe(z.string().max(2000)),
 });
@@ -106,6 +108,7 @@ export const dimensionSuggestionsOutputSchema = z.object({
 
 const difficultySchema = z
   .union([z.enum(['easy', 'medium', 'hard']), z.string(), z.null(), z.undefined()])
+  .optional()
   .transform((v) => (v === 'easy' || v === 'medium' || v === 'hard' ? v : 'medium'));
 
 const rawQuestionSchema = z.object({
@@ -116,7 +119,7 @@ const rawQuestionSchema = z.object({
   source: interviewQuestionSourceSchema.optional(),
   evidence: z.string().optional(),
   question: z.string(),
-  intent: z.union([z.string(), z.null(), z.undefined()]).transform((v) => v ?? ''),
+  intent: z.union([z.string(), z.null(), z.undefined()]).optional().transform((v) => v ?? ''),
   rubric: z
     .union([
       z.object({
@@ -127,6 +130,7 @@ const rawQuestionSchema = z.object({
       z.null(),
       z.undefined(),
     ])
+    .optional()
     .transform((v) => v ?? { excellent: '', pass: '', fail: '' }),
   // 追问从纯字符串升级成「目的 + 问题」。老数据和偶尔偷懒的模型
   // 还会给字符串，统一补成 purpose 为空。
@@ -135,9 +139,9 @@ const rawQuestionSchema = z.object({
       z.array(
         z.union([
           z.object({
-            purpose: z.union([z.string(), z.null(), z.undefined()]).transform((v) => v ?? ''),
+            purpose: z.union([z.string(), z.null(), z.undefined()]).optional().transform((v) => v ?? ''),
             question: z.string(),
-            answer: z.union([z.string(), z.null(), z.undefined()]).transform((v) => v ?? ''),
+            answer: z.union([z.string(), z.null(), z.undefined()]).optional().transform((v) => v ?? ''),
           }),
           z.string().transform((q) => ({ purpose: '', question: q, answer: '' })),
         ]),
@@ -145,15 +149,18 @@ const rawQuestionSchema = z.object({
       z.null(),
       z.undefined(),
     ])
+    .optional()
     .transform((v) => v ?? []),
   referencePoints: stringArray,
   redFlags: stringArray,
   // 只有客观题才该有参考答案，开放题模型会留空或整个漏掉。
   referenceAnswer: z
     .union([z.string(), z.null(), z.undefined()])
+    .optional()
     .transform((v) => v ?? ''),
   estimatedMinutes: z
     .union([z.number(), z.string(), z.null(), z.undefined()])
+    .optional()
     .transform((v) => {
       const n = typeof v === 'string' ? Number(v) : v;
       return Number.isFinite(n) && (n as number) > 0 ? Math.round(n as number) : 5;
@@ -169,6 +176,7 @@ export type QuestionsOutput = z.infer<typeof questionsOutputSchema>;
 
 const recommendationSchema = z
   .union([z.enum(['strong_hire', 'hire', 'hold', 'no_hire']), z.string(), z.null(), z.undefined()])
+  .optional()
   .transform((v) =>
     v === 'strong_hire' || v === 'hire' || v === 'hold' || v === 'no_hire' ? v : 'hold',
   );
@@ -177,8 +185,8 @@ export const evaluationOutputSchema = z.object({
   questionEvaluations: z.array(
     z.object({
       questionId: z.string(),
-      answerSummary: z.union([z.string(), z.null(), z.undefined()]).transform((v) => v ?? ''),
-      answered: z.union([z.boolean(), z.null(), z.undefined()]).transform((v) => v ?? false),
+      answerSummary: z.union([z.string(), z.null(), z.undefined()]).optional().transform((v) => v ?? ''),
+      answered: z.union([z.boolean(), z.null(), z.undefined()]).optional().transform((v) => v ?? false),
       score: score0to100,
       highlights: stringArray,
       weaknesses: stringArray,
@@ -192,10 +200,11 @@ export const evaluationOutputSchema = z.object({
   ),
   strengths: stringArray,
   concerns: stringArray,
-  overallComment: z.union([z.string(), z.null(), z.undefined()]).transform((v) => v ?? ''),
+  overallComment: z.union([z.string(), z.null(), z.undefined()]).optional().transform((v) => v ?? ''),
   recommendation: recommendationSchema,
   recommendationReason: z
     .union([z.string(), z.null(), z.undefined()])
+    .optional()
     .transform((v) => v ?? ''),
 });
 
