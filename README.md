@@ -378,6 +378,7 @@ DATABASE_URL=postgresql://user:pass@host:5432/jadeai
 | `JADE_SINGLE_USER` | 否 | `false` | 设为 `true` 时切换到单本地用户模式（所有请求映射到 id 为 `local` 的用户，跳过指纹与 NextAuth）。仅建议本机/内网使用，公网需在前面加认证 |
 | `JADE_RUNTIME` | 否 | — | 历史别名；设为 `desktop` 时等同于 `JADE_SINGLE_USER=true` |
 | `FEATURE_RECRUIT` | 否 | `true` | 设为 `false` 时隐藏招聘入口并将 `/recruit` 重定向到 dashboard；路由与数据表保留 |
+| `JADE_HOME` | 否 | — | 设为 `dashboard` 时访问 `/` 直接进入工作台；默认展示落地页 |
 | `GOOGLE_CLIENT_ID` | OAuth 时 | — | Google OAuth 客户端 ID |
 | `GOOGLE_CLIENT_SECRET` | OAuth 时 | — | Google OAuth 客户端密钥 |
 | `APP_NAME` | 否 | `JadeAI` | 应用显示名称 |
