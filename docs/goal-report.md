@@ -120,7 +120,7 @@
 验证：
 
 - `pnpm test`（560 tests）、`pnpm type-check`、`pnpm lint`、生产 build 通过。
-- 未做浏览器端点击回归；仅验证配置解析、导航条件与路由重定向逻辑。
+- 生产服务验证：`FEATURE_RECRUIT=false` 时 `/zh/recruit`、`/en/recruit` 均 307 到对应 dashboard；landing HTML 不再输出 `/recruit` 链接。未做真实浏览器视觉回归。
 
 ### P1-2 首页直达工作台
 
@@ -140,7 +140,7 @@
 验证：
 
 - `pnpm test`（562 tests）、`pnpm type-check`、生产 build 通过。
-- 未启动生产服务实际请求 `/` 验证 307 跳转；逻辑由服务端函数与测试覆盖。
+- 生产服务验证：`/` → `/zh`、`/zh` → `/zh/dashboard`、`/en` → `/en/dashboard`；`/zh/dashboard` 返回 200。
 
 ### P1-3 模板按需加载
 
@@ -161,7 +161,7 @@
 
 - `pnpm type-check`、`pnpm test`（562 tests）、`pnpm lint`、生产 build 通过。
 - landing 首屏 JS：1371.7 KB → 912.8 KB（-33.5%）；脚本数 18 → 16。
-- 注意：模板 chunk 拆分后总客户端 JS（未 gzip）约 4.5 MB → 5.6 MB；首屏下降，但分享页可能先显示骨架再 hydrate。
+- 注意：模板 chunk 拆分后总客户端 JS（未 gzip）约 4.5 MB → 5.6 MB；首屏下降，客户端切换模板时可能短暂显示骨架，服务端首屏仍输出当前模板。
 - 未做真实浏览器分享页首屏视觉回归。
 
 ### P1-4 依赖安全升级
@@ -189,7 +189,7 @@
 
 验证：
 
-- `pnpm lint`：0 errors / 160 warnings。
+- `pnpm lint`：0 errors / 159 warnings。
 - `pnpm type-check`：通过。
 - `pnpm test`：69 个测试文件，562 passed / 9 skipped。
 - `DB_TYPE=sqlite SQLITE_PATH=":memory:" pnpm build`：通过。
@@ -223,7 +223,7 @@ pnpm test
 DB_TYPE=sqlite SQLITE_PATH=":memory:" pnpm build
 ```
 
-- lint：通过，0 errors，160 warnings（仓库既有告警，未在本轮扩大范围清理）。
+- lint：通过，0 errors，159 warnings（仓库既有告警，未在本轮扩大范围清理）。
 - type-check：通过。
 - test：69 files / 562 passed / 9 skipped。
 - build：通过；Next.js 16.1.6 生产构建完成。
@@ -235,7 +235,7 @@ DB_TYPE=sqlite SQLITE_PATH=":memory:" pnpm build
 - 默认 bridge 构建在当前 WSL 环境访问 `registry.npmmirror.com` 会失败，因此 smoke 脚本新增 `DOCKER_BUILD_NETWORK` 选项；默认行为不变。
 - 未执行 `git push`、部署或真实 `data/` 操作。
 
-## 未完成 / 未验证
+## 未完全覆盖 / 边界
 
 1. **本机 PDF 回归**：本机无 Chromium，8 个 PDF 回归测试仍 skip；Docker 内真实导出已通过，但本机开发环境的渲染回归仍未覆盖。
 2. **Docker 默认网络**：当前 WSL 环境需要 `DOCKER_BUILD_NETWORK=host` 才能让容器访问 npm 镜像；脚本已支持该选项，默认 bridge 行为未改。其他 CI/主机应优先使用默认值。
@@ -248,7 +248,7 @@ DB_TYPE=sqlite SQLITE_PATH=":memory:" pnpm build
 
 ## 风险与建议下一步
 
-- 先在 Docker 或安装 Chromium 的环境跑 `pnpm docker:smoke`，确认共享浏览器在真实渲染、超时、取消和连续导出下没有回归。
+- Docker 真实导出已通过；若要覆盖超时、取消和并发场景，建议在容器内补一组故障注入回归。
 - 对分享页做一次真实浏览器检查，确认模板 dynamic loading 骨架不会造成明显闪烁或布局跳动。
 - 若长期自用，建议把 `JADE_SINGLE_USER=true`、`JADE_HOME=dashboard`、`FEATURE_RECRUIT=false` 写入实际部署环境文件，并配置每日 `pnpm db:backup`。
 - PostgreSQL 用户需补充 `pg_dump -Fc` 定时备份与恢复演练。
