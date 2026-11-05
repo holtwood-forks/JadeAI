@@ -1,7 +1,20 @@
+import { redirect } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { SettingsDialog } from '@/components/settings/settings-dialog';
+import { resolveRecruitEnabled } from '@/lib/features';
 
-export default function RecruitLayout({ children }: { children: React.ReactNode }) {
+export default async function RecruitLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  if (!resolveRecruitEnabled(process.env)) {
+    const { locale } = await params;
+    redirect(`/${locale}/dashboard`);
+  }
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-background">
       <Header />

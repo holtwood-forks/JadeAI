@@ -1,3 +1,4 @@
+import { resolveRecruitEnabled } from './features';
 import { resolveSingleUserMode } from './runtime-mode';
 
 const singleUser = resolveSingleUserMode(process.env);
@@ -12,6 +13,9 @@ export const config = {
     singleUser,
     /** @deprecated Use `singleUser`; kept for the Electron-era name. */
     desktop: singleUser,
+  },
+  features: {
+    recruit: resolveRecruitEnabled(process.env),
   },
   db: {
     /**

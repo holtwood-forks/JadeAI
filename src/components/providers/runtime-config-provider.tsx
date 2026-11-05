@@ -15,6 +15,7 @@ interface RuntimeConfig {
   aiServerModel: string;
 
   singleUser: boolean;
+  recruitEnabled: boolean;
 }
 
 
@@ -30,6 +31,7 @@ const RuntimeConfigContext = createContext<RuntimeConfig>({
   aiServerBaseURL: 'https://api.openai.com/v1',
   aiServerModel: 'gpt-4o',
   singleUser: false,
+  recruitEnabled: true,
 });
 
 export function RuntimeConfigProvider({
@@ -44,6 +46,7 @@ export function RuntimeConfigProvider({
   aiServerModel,
 
   singleUser,
+  recruitEnabled,
 }: {
   children: React.ReactNode;
   authEnabled: boolean;
@@ -56,6 +59,7 @@ export function RuntimeConfigProvider({
   aiServerModel: string;
 
   singleUser: boolean;
+  recruitEnabled: boolean;
 }) {
   const setServerAIConfig = useSettingsStore((s) => s.setServerAIConfig);
 
@@ -80,6 +84,7 @@ export function RuntimeConfigProvider({
         aiServerBaseURL,
         aiServerModel,
         singleUser,
+        recruitEnabled,
       }}
     >
       {children}

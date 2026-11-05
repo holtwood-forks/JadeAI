@@ -38,7 +38,7 @@ export function LandingHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
-  const { authEnabled, githubRepo } = useRuntimeConfig();
+  const { authEnabled, githubRepo, recruitEnabled } = useRuntimeConfig();
   const stars = useGitHubStars(githubRepo);
 
   const isLoggedIn = authEnabled && !!session?.user;
@@ -82,12 +82,14 @@ export function LandingHeader() {
             >
               {t('interview')}
             </Link>
-            <Link
-              href="/recruit"
-              className="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-            >
-              {t('recruit')}
-            </Link>
+            {recruitEnabled && (
+              <Link
+                href="/recruit"
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+              >
+                {t('recruit')}
+              </Link>
+            )}
           </nav>
         </div>
 
@@ -148,13 +150,15 @@ export function LandingHeader() {
                   >
                     {t('interview')}
                   </Link>
-                  <Link
-                    href="/recruit"
-                    onClick={() => setOpen(false)}
-                    className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-zinc-700 transition-colors hover:bg-brand-muted hover:text-brand dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-brand"
-                  >
-                    {t('recruit')}
-                  </Link>
+                  {recruitEnabled && (
+                    <Link
+                      href="/recruit"
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-zinc-700 transition-colors hover:bg-brand-muted hover:text-brand dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-brand"
+                    >
+                      {t('recruit')}
+                    </Link>
+                  )}
                 </nav>
                 <div className="border-t border-zinc-100 p-4 dark:border-zinc-900">
                   <a
