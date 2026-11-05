@@ -1,11 +1,17 @@
+import { resolveSingleUserMode } from './runtime-mode';
+
+const singleUser = resolveSingleUserMode(process.env);
+
 export const config = {
   auth: {
     enabled: process.env.AUTH_ENABLED === 'true',
     providers: ['google'] as const,
   },
   runtime: {
-    /** True when running inside the Electron desktop shell. */
-    desktop: process.env.JADE_RUNTIME === 'desktop',
+    /** True when every request maps to the fixed `local` user. */
+    singleUser,
+    /** @deprecated Use `singleUser`; kept for the Electron-era name. */
+    desktop: singleUser,
   },
   db: {
     /**

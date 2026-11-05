@@ -10,7 +10,8 @@ export type DatabaseKind = 'postgresql' | 'sqlite';
  * **Desktop.** The client keeps everything on the user's machine; a stray
  * `DB_TYPE=postgresql` in the environment it inherits must not send a person's
  * resumes to a server. The desktop shell sets `SQLITE_PATH` itself, so this is
- * about refusing an engine, not choosing a file.
+ * about refusing an engine, not choosing a file. `JADE_SINGLE_USER=true` only
+ * changes identity, so it deliberately does not override an explicit DB_TYPE.
  *
  * **Production build.** `next build` imports every route module to read its
  * config, which constructs the adapter. Against PostgreSQL that means the build

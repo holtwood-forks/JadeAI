@@ -355,7 +355,8 @@ DATABASE_URL=postgresql://user:pass@host:5432/jadeai
 | `AUTH_SECRET` | 是 | — | 会话加密密钥 |
 | `SQLITE_PATH` | 否 | `./data/jade.db` | SQLite 数据库文件路径 |
 | `AUTH_ENABLED` | 否 | `false` | 启用 Google OAuth（`true`）或使用指纹模式（`false`） |
-| `JADE_RUNTIME` | 否 | — | 设为 `desktop` 时切换到单本地用户模式（跳过指纹与 NextAuth，数据库只有一个 id 为 `local` 的用户） |
+| `JADE_SINGLE_USER` | 否 | `false` | 设为 `true` 时切换到单本地用户模式（所有请求映射到 id 为 `local` 的用户，跳过指纹与 NextAuth）。仅建议本机/内网使用，公网需在前面加认证 |
+| `JADE_RUNTIME` | 否 | — | 历史别名；设为 `desktop` 时等同于 `JADE_SINGLE_USER=true` |
 | `GOOGLE_CLIENT_ID` | OAuth 时 | — | Google OAuth 客户端 ID |
 | `GOOGLE_CLIENT_SECRET` | OAuth 时 | — | Google OAuth 客户端密钥 |
 | `APP_NAME` | 否 | `JadeAI` | 应用显示名称 |

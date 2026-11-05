@@ -77,7 +77,7 @@ export async function resolveCurrentUser(options: {
   // Desktop: one machine, one user. The x-fingerprint header that ~20 client
   // call sites still send is deliberately ignored here rather than removed
   // from each of them.
-  if (config.runtime.desktop) {
+  if (config.runtime.singleUser) {
     const user = await userRepository.ensureLocalUser();
     if (!user) return null;
     return {

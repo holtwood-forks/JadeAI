@@ -3,6 +3,7 @@ import { rejectsSqliteOnVercel, resolveDatabaseKind } from './database-kind';
 
 const BUILD = { NEXT_PHASE: 'phase-production-build' };
 const DESKTOP = { JADE_RUNTIME: 'desktop' };
+const SINGLE_USER = { JADE_SINGLE_USER: 'true' };
 
 describe('resolveDatabaseKind', () => {
   it('defaults to sqlite', () => {
@@ -32,6 +33,10 @@ describe('resolveDatabaseKind', () => {
     expect(resolveDatabaseKind({ ...DESKTOP, DB_TYPE: 'postgresql' })).toBe('sqlite');
   });
 
+  it('keeps an explicit PostgreSQL choice in single-user mode', () => {
+    expect(resolveDatabaseKind({ ...SINGLE_USER, DB_TYPE: 'postgresql' })).toBe('postgresql');
+  });
+
   // `next build` imports every route module, which constructs the adapter. On
   // PostgreSQL that would open a connection to — and migrate — whatever
   // DATABASE_URL points at, which may well be production.
@@ -43,6 +48,10 @@ describe('resolveDatabaseKind', () => {
 describe('rejectsSqliteOnVercel', () => {
   it('rejects sqlite at runtime on Vercel, where the filesystem is read-only', () => {
     expect(rejectsSqliteOnVercel({ VERCEL: '1' })).toBe(true);
+  });
+
+  it('still rejects sqlite on Vercel in single-user mode', () => {
+    expect(rejectsSqliteOnVercel({ ...SINGLE_USER, VERCEL: '1' })).toBe(true);
   });
 
   it('allows a Vercel deployment that uses postgresql', () => {

@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/layout/theme-provider';
 import { RuntimeConfigProvider } from '@/components/providers/runtime-config-provider';
 import { BrandProvider } from '@/components/layout/brand-provider';
 import { getPublicServerAIConfig } from '@/lib/ai/server-config';
+import { resolveSingleUserMode } from '@/lib/runtime-mode';
 
 export default async function LocaleLayout({
   children,
@@ -21,7 +22,7 @@ export default async function LocaleLayout({
   const githubRepo = process.env.PUBLIC_GITHUB_REPO || 'holtwood-projects/JadeAI';
   const siteUrl = (process.env.PUBLIC_SITE_URL || 'https://lessup.github.io/JadeAI').replace(/\/$/, '');
   const serverAIConfig = getPublicServerAIConfig();
-  const desktop = process.env.JADE_RUNTIME === 'desktop';
+  const singleUser = resolveSingleUserMode(process.env);
 
   if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
     notFound();
@@ -39,7 +40,7 @@ export default async function LocaleLayout({
         aiServerProvider={serverAIConfig.provider}
         aiServerBaseURL={serverAIConfig.baseURL}
         aiServerModel={serverAIConfig.model}
-        desktop={desktop}
+        singleUser={singleUser}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider

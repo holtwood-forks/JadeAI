@@ -20,7 +20,7 @@ describe('resolveUser in desktop mode', () => {
 
   async function loadWithDesktop(desktop: boolean) {
     vi.doMock('@/lib/config', () => ({
-      config: { auth: { enabled: false }, runtime: { desktop }, i18n: { defaultLocale: 'zh', locales: ['zh', 'en'] } },
+      config: { auth: { enabled: false }, runtime: { singleUser: desktop, desktop }, i18n: { defaultLocale: 'zh', locales: ['zh', 'en'] } },
     }));
     return import('./helpers');
   }
@@ -52,7 +52,7 @@ describe('resolveUser in desktop mode', () => {
   // branch below the auth branch passes the whole suite.
   it('desktop still wins even if auth is (misconfigured to be) enabled', async () => {
     vi.doMock('@/lib/config', () => ({
-      config: { auth: { enabled: true }, runtime: { desktop: true }, i18n: { defaultLocale: 'zh', locales: ['zh', 'en'] } },
+      config: { auth: { enabled: true }, runtime: { singleUser: true, desktop: true }, i18n: { defaultLocale: 'zh', locales: ['zh', 'en'] } },
     }));
     const { resolveUser } = await import('./helpers');
     expect(await resolveUser('whatever-fingerprint')).toEqual(LOCAL_USER);

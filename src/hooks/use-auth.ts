@@ -8,7 +8,7 @@ import { useFingerprint } from './use-fingerprint';
 export function useAuth() {
   const session = useSession();
   const { fingerprint, isLoading: fpLoading } = useFingerprint();
-  const { authEnabled, desktop } = useRuntimeConfig();
+  const { authEnabled, singleUser } = useRuntimeConfig();
 
   if (authEnabled) {
     return {
@@ -28,11 +28,11 @@ export function useAuth() {
     };
   }
 
-  // Desktop has no auth and no fingerprint identity — resolveUser() on the
-  // server always returns the single local user (see use-fingerprint.ts),
+  // Single-user mode has no auth and no fingerprint identity — resolveUser()
+  // on the server always returns the single local user (see use-fingerprint.ts),
   // so mirror that here instead of synthesizing a fingerprint-mode user
   // that would show as "Anonymous User" in the UI.
-  if (desktop) {
+  if (singleUser) {
     return {
       user: {
         id: LOCAL_USER_ID,
