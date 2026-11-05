@@ -95,7 +95,14 @@ if [ "$needs_host_gateway" = "true" ]; then
 fi
 
 if [ "$SKIP_BUILD" != "true" ]; then
-  docker build "${build_args[@]}" -t "$IMAGE_NAME" "$ROOT_DIR"
+  # Some WSL/CI networks cannot reach package registries from the default
+  # bridge. Opt in with DOCKER_BUILD_NETWORK=host instead of changing the
+  # default for every platform.
+  build_network_args=()
+  if [ -n "${DOCKER_BUILD_NETWORK:-}" ]; then
+    build_network_args+=(--network "$DOCKER_BUILD_NETWORK")
+  fi
+  docker build "${build_network_args[@]}" "${build_args[@]}" -t "$IMAGE_NAME" "$ROOT_DIR"
 fi
 
 ENV_FILE="$(mktemp)"
