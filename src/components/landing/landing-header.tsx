@@ -19,10 +19,13 @@ import { useRuntimeConfig } from '@/components/providers/runtime-config-provider
 function useGitHubStars(githubRepo: string) {
   const [stars, setStars] = useState<number | null>(null);
   useEffect(() => {
-    fetch(`https://api.github.com/repos/${githubRepo}`)
-      .then((r) => r.json())
+    // Go through the app's cached route instead of api.github.com: a browser
+    // hits the 60 req/h unauthenticated limit quickly, and the server caches
+    // the response for 5 minutes.
+    fetch(`/api/github/repo?url=${encodeURIComponent(`https://github.com/${githubRepo}`)}`)
+      .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (typeof d.stargazers_count === 'number') setStars(d.stargazers_count);
+        if (d && typeof d.stars === 'number') setStars(d.stars);
       })
       .catch(() => {});
   }, [githubRepo]);

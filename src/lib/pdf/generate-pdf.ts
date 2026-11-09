@@ -3,6 +3,7 @@ import { delimiter, join } from 'node:path';
 import puppeteer, { type Browser, type Page } from 'puppeteer-core';
 
 import type { PdfLayout } from './layout';
+import { resolvePdfBrowserIdleMs } from './resource-policy';
 import {
   CONTINUOUS_WIDTH_MM,
   CONTINUOUS_WIDTH_PX,
@@ -94,7 +95,9 @@ export function resolveLocalChromeExecutable(
   for (const name of PATH_CHROME_BINARIES) {
     for (const dir of pathEnv.split(delimiter)) {
       if (!dir) continue;
-      const executablePath = join(dir, name);
+      // turbopackIgnore: this is a PATH lookup, not a project-relative read;
+      // without the hint Turbopack traces the whole project into the bundle.
+      const executablePath = join(/* turbopackIgnore: true */ dir, name);
       if (hasAccess(executablePath)) {
         return executablePath;
       }
@@ -224,8 +227,6 @@ async function closePdfBrowser(browser: Browser): Promise<void> {
   }
 }
 
-const PDF_BROWSER_IDLE_TIMEOUT_MS = 10 * 60 * 1000;
-
 // Survive Next.js dev reloads: a module-local browser would leak a Chromium
 // process on every hot reload.
 const pdfBrowserState = globalThis as typeof globalThis & {
@@ -247,7 +248,7 @@ function scheduleIdleClose(): void {
   if (!pdfBrowserState.__jadePdfBrowser) return;
   const timer = setTimeout(() => {
     void closeSharedBrowser();
-  }, PDF_BROWSER_IDLE_TIMEOUT_MS);
+  }, resolvePdfBrowserIdleMs());
   timer.unref?.();
   pdfBrowserState.__jadePdfIdleTimer = timer;
 }

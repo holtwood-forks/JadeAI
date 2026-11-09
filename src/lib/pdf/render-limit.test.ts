@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { withResumePdfSlot } from './render-limit';
 
 describe('resume PDF concurrency bound', () => {
@@ -15,5 +15,21 @@ describe('resume PDF concurrency bound', () => {
     fail(new Error('render failed'));
     await rejected;
     await expect(withResumePdfSlot(async () => 'recovered')).resolves.toBe('recovered');
+  });
+});
+
+describe('resume PDF concurrency is configurable', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('honours PDF_MAX_CONCURRENT=1', async () => {
+    vi.stubEnv('PDF_MAX_CONCURRENT', '1');
+    let finish!: () => void;
+    const first = withResumePdfSlot(() => new Promise<void>(resolve => { finish = resolve; }));
+    await expect(withResumePdfSlot(async () => 'excess')).rejects.toThrow('busy');
+    finish();
+    await first;
+    await expect(withResumePdfSlot(async () => 'available')).resolves.toBe('available');
   });
 });
