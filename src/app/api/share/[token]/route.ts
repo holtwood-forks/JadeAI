@@ -4,6 +4,8 @@ import { shareRepository } from '@/lib/db/repositories/share.repository';
 import { verifyPassword } from '@/lib/utils/share';
 import { serializePublicResume } from '@/lib/share/public-resume';
 import { checkRateLimit, getClientIp, rateLimitResponse } from '@/lib/rate-limit';
+import { readJsonBody, RequestBodyError } from '@/lib/http/read-json-body';
+import { MAX_SHARE_BODY_BYTES, MAX_SHARE_PASSWORD_LENGTH } from '@/lib/share/payload';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +20,7 @@ async function handleShare(
   token: string,
   password: string | null
 ) {
-  if (password && password.length > 256) {
+  if (password && password.length > MAX_SHARE_PASSWORD_LENGTH) {
     return json({ error: 'Invalid password' }, { status: 400 });
   }
 
@@ -96,14 +98,13 @@ export async function GET(
 ) {
   try {
     const { token } = await params;
-    // Password in a query string leaks into access logs; prefer POST. GET is
-    // kept for the no-password probe and older clients.
-    return await handleShare(
-      request,
-      token,
-      request.nextUrl.searchParams.get('password')
-    );
+    // GET is a no-password probe only. Passwords must go through POST: a query
+    // string ends up in access logs, proxy logs and APM traces.
+    return await handleShare(request, token, null);
   } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return json({ error: error.message }, { status: error.status });
+    }
     console.error('GET /api/share/[token] error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -115,14 +116,17 @@ export async function POST(
 ) {
   try {
     const { token } = await params;
-    const body: unknown = await request.json().catch(() => null);
+    const body = await readJsonBody(request, { maxBytes: MAX_SHARE_BODY_BYTES });
     const password =
-      body && typeof body === 'object' && 'password' in body
+      body && typeof body === 'object' && !Array.isArray(body) && 'password' in body
         && typeof body.password === 'string'
         ? body.password
         : null;
     return await handleShare(request, token, password);
   } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return json({ error: error.message }, { status: error.status });
+    }
     console.error('POST /api/share/[token] error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }

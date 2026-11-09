@@ -29,13 +29,17 @@ export default function SharePage({ params }: { params: Promise<{ token: string 
       const url = `/api/share/${token}`;
       // Password goes in the body, not the query string, so it does not leak
       // into access logs or APM traces.
+      // Never let the browser reuse a previously fetched copy: after the owner
+      // disables a share (or changes the password) the cached body must not
+      // keep rendering.
       const res = pwd
         ? await fetch(url, {
           method: 'POST',
+          cache: 'no-store',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ password: pwd }),
         })
-        : await fetch(url);
+        : await fetch(url, { cache: 'no-store' });
 
       if (res.status === 429) {
         // Keep the password form visible instead of showing "not found".

@@ -3,6 +3,17 @@ import { resumeRepository } from '@/lib/db/repositories/resume.repository';
 import { resolveCurrentUser } from '@/lib/auth/helpers';
 import { DEFAULT_SECTIONS } from '@/lib/constants';
 import { isResumeSectionType, safeNormalizeResumeSectionContent } from '@/lib/resume-section/schema';
+import { readJsonBody, RequestBodyError } from '@/lib/http/read-json-body';
+import { validateResumeSections, validateResumeTitle } from '@/lib/resume/payload';
+import type { ThemeConfigInput } from '@/lib/resume-theme/theme-config';
+
+type ResumeCreateBody = {
+  title?: unknown;
+  template?: unknown;
+  language?: unknown;
+  themeConfig?: unknown;
+  sections?: unknown;
+};
 
 export const dynamic = 'force-dynamic';
 
@@ -28,8 +39,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { title, template, language, sections, themeConfig } = body;
+    const body = (await readJsonBody(request)) as ResumeCreateBody | null;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      throw new RequestBodyError('Expected a JSON object', 400);
+    }
+    validateResumeTitle(body.title);
+    validateResumeSections(body.sections);
+
+    const title = typeof body.title === 'string' ? body.title : undefined;
+    const template = typeof body.template === 'string' ? body.template : undefined;
+    const language = typeof body.language === 'string' ? body.language : undefined;
+    const themeConfig =
+      body.themeConfig && typeof body.themeConfig === 'object'
+        ? (body.themeConfig as ThemeConfigInput)
+        : undefined;
+    const sections = body.sections;
 
     const resume = await resumeRepository.create({
       userId: currentUser.user.id,
@@ -91,6 +115,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ error: 'Failed to create resume' }, { status: 500 });
   } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('POST /api/resume error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resumeRepository } from '@/lib/db/repositories/resume.repository';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
 import { generateShareToken, getShareUrl, hashPassword } from '@/lib/utils/share';
+import { readJsonBody, RequestBodyError } from '@/lib/http/read-json-body';
+import { MAX_SHARE_BODY_BYTES, readSharePassword } from '@/lib/share/payload';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +19,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const resume = await resumeRepository.findById(id);
+    const resume = await resumeRepository.findByIdWithShareFields(id);
     if (!resume) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
@@ -25,8 +27,10 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const body = await request.json().catch(() => ({}));
-    const { password } = body as { password?: string };
+    const body = await readJsonBody(request, { maxBytes: MAX_SHARE_BODY_BYTES });
+    const password = readSharePassword(
+      body && typeof body === 'object' && !Array.isArray(body) ? (body as { password?: unknown }).password : undefined,
+    );
 
     // Reuse existing token or generate a new one
     const shareToken = resume.shareToken || generateShareToken();
@@ -44,6 +48,9 @@ export async function POST(
       isPublic: true,
     });
   } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('POST /api/resume/[id]/share error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -61,7 +68,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const resume = await resumeRepository.findById(id);
+    const resume = await resumeRepository.findByIdWithShareFields(id);
     if (!resume) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
@@ -94,7 +101,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const resume = await resumeRepository.findById(id);
+    const resume = await resumeRepository.findByIdWithShareFields(id);
     if (!resume) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }

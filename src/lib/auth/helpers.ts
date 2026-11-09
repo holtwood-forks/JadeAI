@@ -12,6 +12,7 @@ import {
   type CurrentUserIdentity,
   type RequestWithReadableCookies,
 } from './current-user';
+import { AUTH_MODE_CONFLICT_MESSAGE, hasAuthModeConflict } from './mode-conflict';
 
 type CurrentUser = NonNullable<Awaited<ReturnType<typeof userRepository.findById>>>;
 
@@ -71,6 +72,13 @@ export async function resolveCurrentUser(options: {
   request?: RequestWithReadableCookies;
   fingerprint?: string | null;
 } = {}): Promise<CurrentUserContext | null> {
+  // Fail closed: never let the single-user shortcut decide whether auth is
+  // enforced. Without this, "AUTH_ENABLED=true + JADE_SINGLE_USER=true" served
+  // every API anonymously as the local user.
+  if (hasAuthModeConflict(config.auth.enabled, config.runtime.singleUser)) {
+    throw new Error(AUTH_MODE_CONFLICT_MESSAGE);
+  }
+
   // Ensure DB tables exist before any query
   await dbReady;
 

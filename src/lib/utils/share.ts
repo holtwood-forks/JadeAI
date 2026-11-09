@@ -6,11 +6,47 @@ export function generateShareToken(): string {
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+/**
+ * Normalize a configured base URL, keeping any path prefix (e.g. a project
+ * page served from `/JadeAI`). Returns null for non-http(s) values.
+ */
+function normalizeBaseUrl(value: string | undefined | null): string | null {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+    return `${url.origin}${url.pathname.replace(/\/+$/, '')}`;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Build an absolute share URL.
+ *
+ * `X-Forwarded-Host`/`X-Forwarded-Proto` are attacker-controlled unless a
+ * trusted proxy sets them, so they are ignored by default. Enable
+ * `TRUST_PROXY=true` only when every request reaches this process through such
+ * a proxy; otherwise `PUBLIC_SITE_URL` (then the request origin) is used.
+ */
 export function getShareUrl(token: string, request: NextRequest): string {
-  const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
-  const proto = request.headers.get('x-forwarded-proto') || 'https';
-  const origin = host ? `${proto}://${host}` : request.nextUrl.origin;
-  return `${origin}/share/${token}`;
+  let baseUrl: string | null = null;
+
+  if (process.env.TRUST_PROXY === 'true') {
+    const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
+    const protoHeader = request.headers.get('x-forwarded-proto');
+    const proto = protoHeader === 'http' || protoHeader === 'https' ? protoHeader : 'https';
+    if (host) {
+      // Reject values that smuggle a path/credentials into the host header.
+      const forwarded = normalizeBaseUrl(`${proto}://${host}`);
+      if (forwarded && new URL(forwarded).pathname === '/') baseUrl = forwarded.replace(/\/$/, '');
+    }
+  }
+
+  baseUrl ??= normalizeBaseUrl(process.env.PUBLIC_SITE_URL);
+  baseUrl ??= `${request.nextUrl.origin}${request.nextUrl.basePath ?? ''}`;
+
+  return `${baseUrl}/share/${encodeURIComponent(token)}`;
 }
 
 const PBKDF2_ITERATIONS = 100_000;

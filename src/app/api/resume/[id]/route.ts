@@ -2,7 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resumeRepository } from '@/lib/db/repositories/resume.repository';
 import { resolveCurrentUser } from '@/lib/auth/helpers';
 import { safeNormalizeResumeSectionContent } from '@/lib/resume-section/schema';
+import { readJsonBody, RequestBodyError } from '@/lib/http/read-json-body';
+import { validateResumeSections, validateResumeTitle } from '@/lib/resume/payload';
+import type { ThemeConfigInput } from '@/lib/resume-theme/theme-config';
 import type { ResumeSection } from '@/types/resume';
+
+type ResumeUpdateBody = {
+  title?: unknown;
+  template?: unknown;
+  language?: unknown;
+  themeConfig?: unknown;
+  sections?: unknown;
+};
 
 type IncomingSection = Pick<ResumeSection, 'id' | 'type' | 'title' | 'sortOrder' | 'visible' | 'content'>;
 
@@ -53,9 +64,25 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const body = await request.json();
-    const { title, template, themeConfig, language, sections } = body;
-    const incomingSections = Array.isArray(sections) ? (sections as IncomingSection[]) : undefined;
+    const body = (await readJsonBody(request)) as ResumeUpdateBody | null;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      throw new RequestBodyError('Expected a JSON object', 400);
+    }
+    validateResumeTitle(body.title);
+    validateResumeSections(body.sections);
+
+    const title = typeof body.title === 'string' ? body.title : undefined;
+    const template = typeof body.template === 'string' ? body.template : undefined;
+    const language = typeof body.language === 'string' ? body.language : undefined;
+    const themeConfig =
+      body.themeConfig === null
+        ? null
+        : body.themeConfig && typeof body.themeConfig === 'object'
+          ? (body.themeConfig as ThemeConfigInput)
+          : undefined;
+    const incomingSections = Array.isArray(body.sections)
+      ? (body.sections as IncomingSection[])
+      : undefined;
 
     // Update resume metadata
     // Sync sections: create new, update existing, delete removed
@@ -81,6 +108,9 @@ export async function PUT(
     });
     return NextResponse.json(updated);
   } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('PUT /api/resume/[id] error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
