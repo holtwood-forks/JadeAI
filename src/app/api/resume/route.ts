@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resumeRepository } from '@/lib/db/repositories/resume.repository';
 import { resolveCurrentUser } from '@/lib/auth/helpers';
-import { DEFAULT_SECTIONS } from '@/lib/constants';
+import { DEFAULT_SECTIONS, TEMPLATES } from '@/lib/constants';
 import { isResumeSectionType, safeNormalizeResumeSectionContent } from '@/lib/resume-section/schema';
 import { readJsonBody, RequestBodyError } from '@/lib/http/read-json-body';
 import { validateResumeSections, validateResumeTitle } from '@/lib/resume/payload';
@@ -16,6 +16,13 @@ type ResumeCreateBody = {
 };
 
 export const dynamic = 'force-dynamic';
+
+/** Reject unknown template names up front: they would silently render as
+ *  classic on export (builder fallback) while the stored row keeps the
+ *  bogus value, leaving no way to fix it from the editor. */
+function isKnownTemplate(value: unknown): boolean {
+  return typeof value === 'string' && (TEMPLATES as readonly string[]).includes(value);
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,6 +61,10 @@ export async function POST(request: NextRequest) {
         ? (body.themeConfig as ThemeConfigInput)
         : undefined;
     const sections = body.sections;
+
+    if (template !== undefined && !isKnownTemplate(template)) {
+      return NextResponse.json({ error: 'Unknown template' }, { status: 400 });
+    }
 
     const resume = await resumeRepository.create({
       userId: currentUser.user.id,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resumeRepository } from '@/lib/db/repositories/resume.repository';
 import { resolveCurrentUser } from '@/lib/auth/helpers';
+import { TEMPLATES } from '@/lib/constants';
 import { safeNormalizeResumeSectionContent } from '@/lib/resume-section/schema';
 import { readJsonBody, RequestBodyError } from '@/lib/http/read-json-body';
 import { validateResumeSections, validateResumeTitle } from '@/lib/resume/payload';
@@ -83,6 +84,10 @@ export async function PUT(
     const incomingSections = Array.isArray(body.sections)
       ? (body.sections as IncomingSection[])
       : undefined;
+
+    if (template !== undefined && !(TEMPLATES as readonly string[]).includes(template)) {
+      return NextResponse.json({ error: 'Unknown template' }, { status: 400 });
+    }
 
     // Update resume metadata
     // Sync sections: create new, update existing, delete removed

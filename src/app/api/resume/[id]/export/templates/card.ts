@@ -91,13 +91,13 @@ export function buildCardHtml(resume: ResumeWithSections): string {
   return `<div class="mx-auto max-w-[210mm] bg-white shadow-lg" style="font-family:Inter,sans-serif">
     <div class="mb-6 text-center">
       ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="mx-auto mb-3 h-20 w-20 rounded-full object-cover" style="border:3px solid ${ACCENT}"/>` : ''}
-      <h1 class="text-2xl font-bold" style="color:${PRIMARY}">${esc(pi.fullName || 'Your Name')}</h1>
+      <h1 class="text-2xl font-bold" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
       ${pi.jobTitle ? `<p class="mt-1 text-sm font-medium" style="color:${ACCENT}">${esc(pi.jobTitle)}</p>` : ''}
       ${contacts.length || pi.linkedin || pi.github ? `<div class="mt-2 flex flex-wrap items-center justify-center gap-3 text-xs text-zinc-500">${contacts.map(ct => `<span>${esc(ct)}</span>`).join('')}${pi.linkedin ? `<span>LinkedIn: ${esc(pi.linkedin)}</span>` : ''}${pi.github ? `<span>GitHub: ${esc(pi.github)}</span>` : ''}</div>` : ''}
     </div>
     ${sections.map(s => `<div class="mb-4" data-section>
       <div class="rounded-lg p-4 shadow-sm" style="background-color:${CARD_BG};border:1px solid #e4e4e7">
-        <div class="mb-3 flex items-center gap-2"><div class="h-5 w-1 rounded-full" style="background-color:${ACCENT}"></div><h2 class="text-sm font-bold uppercase tracking-wider" style="color:${PRIMARY}">${esc(s.title)}</h2></div>
+        <div class="mb-3 flex items-center gap-2"><div class="h-5 w-1 rounded-full" style="background-color:${ACCENT}"></div><h2 class="text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color)">${esc(s.title)}</h2></div>
         ${buildCardSectionContent(s, lang)}
       </div>
     </div>`).join('')}

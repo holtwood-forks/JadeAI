@@ -102,13 +102,13 @@ export function buildScientistHtml(resume: ResumeWithSections): string {
   return `<div class="mx-auto max-w-[210mm] bg-white shadow-lg" style="font-family:Georgia,serif">
     <div class="mb-6 text-center">
       ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="mx-auto mb-3 h-14 w-14 rounded-full object-cover" style="border:2px solid ${ACCENT}"/>` : ''}
-      <h1 class="text-2xl font-bold" style="color:${PRIMARY}">${esc(pi.fullName || 'Your Name')}</h1>
+      <h1 class="text-2xl font-bold" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
       ${pi.jobTitle ? `<p class="mt-1 text-sm italic" style="color:${ACCENT}">${esc(pi.jobTitle)}</p>` : ''}
       ${contacts.length || pi.linkedin || pi.github ? `<div class="mt-2 flex flex-wrap items-center justify-center gap-3 text-xs" style="color:${MUTED}">${contacts.map(ct => `<span>${esc(ct)}</span>`).join('')}${pi.linkedin ? `<span>${esc(pi.linkedin)}</span>` : ''}${pi.github ? `<span>${esc(pi.github)}</span>` : ''}</div>` : ''}
     </div>
     <div class="mb-6 h-px w-full" style="background-color:${PRIMARY}"></div>
     ${sections.map((s, idx) => `<div class="mb-6" data-section>
-      <div class="mb-2 flex items-baseline gap-2"><span class="text-sm font-bold" style="color:${ACCENT}">${idx + 1}.</span><h2 class="text-sm font-bold uppercase tracking-wider" style="color:${PRIMARY}">${esc(s.title)}</h2></div>
+      <div class="mb-2 flex items-baseline gap-2"><span class="text-sm font-bold" style="color:${ACCENT}">${idx + 1}.</span><h2 class="text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color)">${esc(s.title)}</h2></div>
       <div class="h-px w-full" style="background-color:${GRID_LINE}"></div>
       <div class="mt-2">${buildScientistSectionContent(s, idx, resume.language || 'en')}</div>
     </div>`).join('')}

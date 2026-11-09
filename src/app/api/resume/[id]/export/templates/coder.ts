@@ -84,7 +84,7 @@ function buildCoderMainContent(section: Section, lang: string): string {
 
   if (section.type === 'projects') {
     return `<div class="space-y-3">${((c as ProjectsContent).items || []).map((it: any) => `<div>
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${BLUE}">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs text-zinc-400">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-accent-safe-on-dark)">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs text-zinc-400">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
       ${it.description ? `<div class="mt-1 text-sm text-zinc-600">${md(it.description)}</div>` : ''}
       ${it.technologies?.length ? `<div class="mt-1 flex flex-wrap gap-1">${it.technologies.map((t: string) => `<span class="rounded-sm px-1.5 py-0.5 text-[10px] font-medium" style="background-color:#f6f8fa;color:#57606a;border:1px solid #d0d7de">${esc(t)}</span>`).join('')}</div>` : ''}
       ${it.highlights?.length ? `<ul class="mt-1 space-y-0.5">${buildCoderHighlights(it.highlights)}</ul>` : ''}
@@ -93,7 +93,7 @@ function buildCoderMainContent(section: Section, lang: string): string {
 
   if (section.type === 'github') {
     return `<div class="space-y-3">${((c as GitHubContent).items || []).map((it: any) => `<div>
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${BLUE}">${esc(it.name)}</h3><span class="text-xs text-zinc-400">\u2B50 ${it.stars?.toLocaleString() ?? 0}</span></div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-accent-safe-on-dark)">${esc(it.name)}</h3><span class="text-xs text-zinc-400">\u2B50 ${it.stars?.toLocaleString() ?? 0}</span></div>
       ${it.language ? `<span class="rounded-sm px-1.5 py-0.5 text-[10px] font-medium" style="background-color:#f6f8fa;color:#57606a;border:1px solid #d0d7de">${esc(it.language)}</span>` : ''}
       ${it.description ? `<div class="mt-1 text-sm text-zinc-600">${md(it.description)}</div>` : ''}
     </div>`).join('')}</div>`;
@@ -151,7 +151,7 @@ export function buildCoderHtml(resume: ResumeWithSections): string {
       </div>
       <div class="mb-5">
         ${pi.avatar ? `<div class="mx-auto mb-3 h-20 w-20 overflow-hidden rounded-lg"><img src="${esc(pi.avatar)}" alt="" class="h-full w-full object-cover"/></div>` : ''}
-        <h1 class="text-lg font-bold" style="color:${GREEN}">${esc(pi.fullName || 'Your Name')}</h1>
+        <h1 class="text-lg font-bold" style="color:var(--theme-primary-safe-on-dark)">${esc(pi.fullName || 'Your Name')}</h1>
         ${pi.jobTitle ? `<p class="mt-0.5 text-xs" style="color:${BLUE}">// ${esc(pi.jobTitle)}</p>` : ''}
       </div>
       <div class="mb-5 space-y-1.5 text-[11px]" style="border-top:1px solid ${BORDER};padding-top:12px">
@@ -172,7 +172,7 @@ export function buildCoderHtml(resume: ResumeWithSections): string {
         ${pi.linkedin ? `<div class="flex items-start gap-2"><span style="color:${GREEN}">$</span><span class="break-all" style="color:#8b949e">${esc(pi.linkedin)}</span></div>` : ''}
       </div>
       ${sidebarSections.map(s => `<div class="mb-5" data-section style="border-top:1px solid ${BORDER};padding-top:12px">
-        <h2 class="mb-2 text-[10px] font-bold uppercase tracking-wider" style="color:${BLUE}">&gt; ${esc(s.title)}</h2>
+        <h2 class="mb-2 text-[10px] font-bold uppercase tracking-wider" style="color:var(--theme-accent-safe-on-dark)">&gt; ${esc(s.title)}</h2>
         ${buildCoderSidebarContent(s)}
       </div>`).join('')}
     </div>

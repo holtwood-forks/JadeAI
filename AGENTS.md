@@ -30,7 +30,7 @@ CI（`.github/workflows/ci.yml`）依次执行：lint → type-check → test �
 - `drizzle/` — 生成的数据库迁移文件（`migrations/` 为 SQLite，`pg-migrations/` 为 PostgreSQL）
 - `scripts/` — 构建/运维脚本（`build-export-css.ts`、`docker-smoke.sh`、`verify-release.sh`、`benchmark-pdf-layout.ts`）
 - `changelog/` — 每个版本与专题的发布记录（`YYYY-MM-DD-*.md`）
-- `docs/` — 设计与研究文档；`ARCHITECTURE.md` 为架构详解，`fork-notes.md` 为 fork 维护手册（与上游的分歧地图、同步流程与冲突处理表）；根目录 `Dockerfile` 与 `docker_run_local.sh` 支撑 Docker 流程
+- `docs/` — 设计与研究文档（`design/` 模板截图与 mockup、`research/` 调研笔记）；`fork-notes.md` 为 fork 维护手册（与上游的分歧地图、同步流程与冲突处理表）；根目录 `Dockerfile` 与 `docker_run_local.sh` 支撑 Docker 流程
 
 ## 关键约束
 

@@ -95,18 +95,17 @@ export function buildTimelineHtml(resume: ResumeWithSections): string {
   const pi = getPersonalInfo(resume);
   const sections = visibleSections(resume);
   const contacts = [pi.age, pi.politicalStatus, pi.gender, pi.ethnicity, pi.hometown, pi.maritalStatus, pi.yearsOfExperience, pi.educationLevel, pi.email, pi.phone, pi.wechat, pi.location, pi.website, pi.linkedin, pi.github].filter(Boolean);
-  const BG = '#475569';
   const AC = '#3b82f6';
 
   return `<div class="mx-auto max-w-[210mm] bg-white shadow-lg" style="font-family:Inter,sans-serif">
     <div class="mb-6 text-center">
       ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="mx-auto mb-3 h-18 w-18 rounded-full border-2 object-cover" style="border-color:${AC}"/>` : ''}
-      <h1 class="text-2xl font-bold" style="color:${BG}">${esc(pi.fullName || 'Your Name')}</h1>
+      <h1 class="text-2xl font-bold" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
       ${pi.jobTitle ? `<p class="mt-0.5 text-base" style="color:${AC}">${esc(pi.jobTitle)}</p>` : ''}
       ${contacts.length ? `<div class="mt-2 flex flex-wrap items-center justify-center gap-3 text-sm text-zinc-500">${contacts.map(c => `<span>${esc(c)}</span>`).join('')}</div>` : ''}
     </div>
     ${sections.map(s => `<div class="mb-6" data-section>
-      <h2 class="mb-3 text-sm font-bold uppercase tracking-wider" style="color:${BG}">${esc(s.title)}</h2>
+      <h2 class="mb-3 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color)">${esc(s.title)}</h2>
       ${buildTimelineSectionContent(s, resume.language || 'en')}
     </div>`).join('')}
   </div>`;

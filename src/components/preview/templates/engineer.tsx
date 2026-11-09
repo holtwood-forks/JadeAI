@@ -67,7 +67,7 @@ export function EngineerTemplate({ resume }: { resume: Resume }) {
           .map((section) => (
             <div key={section.id} className="mb-6" data-section>
               <div className="mb-2 flex items-center gap-3">
-                <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: PRIMARY }}>
+                <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
                   {section.title}
                 </h2>
                 <div className="h-px flex-1" style={{ backgroundColor: ACCENT }} />

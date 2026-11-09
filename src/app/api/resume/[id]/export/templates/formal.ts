@@ -85,7 +85,7 @@ export function buildFormalHtml(resume: ResumeWithSections): string {
       <div class="flex items-center justify-center gap-4">
         ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="h-16 w-16 shrink-0 rounded-full border-2 object-cover" style="border-color:${DG}"/>` : ''}
         <div class="text-center">
-          <h1 class="text-2xl font-bold" style="color:${DG}">${esc(pi.fullName || 'Your Name')}</h1>
+          <h1 class="text-2xl font-bold" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
           ${pi.jobTitle ? `<p class="mt-0.5 text-base text-zinc-500">${esc(pi.jobTitle)}</p>` : ''}
         </div>
       </div>
@@ -93,7 +93,7 @@ export function buildFormalHtml(resume: ResumeWithSections): string {
     </div>
     ${sections.map(s => `<div class="mb-5" data-section>
       <div class="mb-2 flex items-center gap-2">
-        <h2 class="shrink-0 text-sm font-bold uppercase tracking-wider" style="color:${DG}">${esc(s.title)}</h2>
+        <h2 class="shrink-0 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color)">${esc(s.title)}</h2>
         <div class="h-px flex-1 bg-zinc-200"></div>
       </div>
       ${buildFormalSectionContent(s, resume.language || 'en')}

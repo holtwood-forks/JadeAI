@@ -32,7 +32,7 @@ export function ProfessionalTemplate({ resume }: { resume: Resume }) {
             <AvatarImage src={pi.avatar} avatarStyle={resume.themeConfig?.avatarStyle} size={72} className="shrink-0" style={{ border: '2px solid #1e3a5f' }} />
           )}
           <div>
-            <h1 className="text-3xl font-bold tracking-wide" style={{ color: '#1e3a5f' }}>
+            <h1 className="text-3xl font-bold tracking-wide" style={{ color: 'var(--theme-primary-color)' }}>
               {pi.fullName || 'Your Name'}
             </h1>
             {pi.jobTitle && (
@@ -61,7 +61,7 @@ export function ProfessionalTemplate({ resume }: { resume: Resume }) {
         .map((section) => (
           <div key={section.id} className="mb-5" data-section>
             <div className="mb-3 flex items-center gap-3">
-              <h2 className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: '#1e3a5f' }}>
+              <h2 className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--theme-primary-color)' }}>
                 {section.title}
               </h2>
               <div className="h-[1px] flex-1 bg-zinc-200" />

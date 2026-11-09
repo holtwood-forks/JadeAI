@@ -34,7 +34,7 @@ export function ArchitectTemplate({ resume }: { resume: Resume }) {
             <div>
               <h1
                 className="text-2xl font-bold uppercase tracking-wider"
-                style={{ fontFamily: 'JetBrains Mono, Consolas, monospace', color: PRIMARY }}
+                style={{ fontFamily: 'JetBrains Mono, Consolas, monospace', color: 'var(--theme-primary-color)' }}
               >
                 {pi.fullName || 'Your Name'}
               </h1>
@@ -76,7 +76,7 @@ export function ArchitectTemplate({ resume }: { resume: Resume }) {
               <div className="h-2.5 w-2.5 rotate-45" style={{ backgroundColor: ACCENT }} />
               <h2
                 className="text-sm font-bold uppercase tracking-[0.15em]"
-                style={{ fontFamily: 'JetBrains Mono, Consolas, monospace', color: PRIMARY }}
+                style={{ fontFamily: 'JetBrains Mono, Consolas, monospace', color: 'var(--theme-primary-color)' }}
               >
                 {section.title}
               </h2>

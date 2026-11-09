@@ -29,7 +29,7 @@ export function DeveloperTemplate({ resume }: { resume: Resume }) {
             <AvatarImage src={pi.avatar} avatarStyle={resume.themeConfig?.avatarStyle} size={64} className="shrink-0" />
           )}
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: GREEN }}>{pi.fullName || 'Your Name'}</h1>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--theme-accent-color)' }}>{pi.fullName || 'Your Name'}</h1>
             {pi.jobTitle && <p className="mt-0.5 text-sm" style={{ color: BLUE }}>{`// ${pi.jobTitle}`}</p>}
             <div className="mt-2 flex flex-wrap gap-3 text-xs text-zinc-400">
               {pi.age && <span>{pi.age}</span>}
@@ -55,7 +55,7 @@ export function DeveloperTemplate({ resume }: { resume: Resume }) {
           .filter((s) => s.visible && s.type !== 'personal_info' && !isSectionEmpty(s))
           .map((section) => (
             <div key={section.id} className="mb-6" data-section>
-              <h2 className="mb-2 text-sm font-bold" style={{ color: ORANGE }}>
+              <h2 className="mb-2 text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>
                 {'> '}{section.title.toUpperCase()}
               </h2>
               <div className="border-l-2 pl-4" style={{ borderColor: '#3e4451' }}>

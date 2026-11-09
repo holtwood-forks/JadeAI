@@ -1,4 +1,5 @@
 import { esc, buildExportThemeCSS, type ResumeWithSections } from './utils';
+import type { Template } from '@/lib/constants';
 import { EXPORT_TAILWIND_CSS } from '@/lib/pdf/export-tailwind-css';
 import { getEmbeddedFontFacesCss } from '@/lib/font-stacks';
 import { normalizeLanguageDescriptionsForCompactTemplates } from '@/lib/language-description';
@@ -70,7 +71,10 @@ import { buildZigzagHtml } from './templates/zigzag';
 import { buildRibbonHtml } from './templates/ribbon';
 import { buildMosaicHtml } from './templates/mosaic';
 
-const TEMPLATE_BUILDERS: Record<string, (r: ResumeWithSections) => string> = {
+// Record<Template, ...> makes the map exhaustive at compile time: adding a
+// template to TEMPLATES without a builder here is a type error, not a silent
+// classic fallback at runtime.
+const TEMPLATE_BUILDERS: Record<Template, (r: ResumeWithSections) => string> = {
   classic: buildClassicHtml,
   modern: buildModernHtml,
   minimal: buildMinimalHtml,
@@ -129,6 +133,9 @@ const TEMPLATE_BUILDERS: Record<string, (r: ResumeWithSections) => string> = {
   mosaic: buildMosaicHtml,
 };
 
+/** Exported for the exhaustiveness test in builders.test.ts. */
+export { TEMPLATE_BUILDERS };
+
 function isValidQrUrl(str: string): boolean {
   if (!str?.trim()) return false;
   try {
@@ -166,9 +173,15 @@ export async function generateHtml(
   );
   // Pre-generate QR SVGs so sync template builders can use them
   await preGenerateQrSvgs(safeResume);
-  const builder = TEMPLATE_BUILDERS[safeResume.template] || buildClassicHtml;
+  // The map is exhaustive for known templates; the classic fallback still
+  // guards against arbitrary template strings from legacy/corrupted rows.
+  const template = safeResume.template;
+  const builder =
+    template && template in TEMPLATE_BUILDERS
+      ? TEMPLATE_BUILDERS[template as Template]
+      : buildClassicHtml;
   const bodyHtml = builder(safeResume);
-  const theme = mergeThemeConfig((safeResume as any).themeConfig);
+  const theme = mergeThemeConfig((safeResume as any).themeConfig, safeResume.template);
   const layoutProfile = getPdfLayoutProfile(safeResume.template);
   const themeCSS = buildExportThemeCSS(theme, safeResume.template);
   const embeddedFontsCss = getEmbeddedFontFacesCss(fontBaseUrl);

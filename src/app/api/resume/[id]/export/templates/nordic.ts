@@ -99,13 +99,13 @@ export function buildNordicHtml(resume: ResumeWithSections): string {
   return `<div class="mx-auto max-w-[210mm] bg-white shadow-lg" style="font-family:Inter,sans-serif">
     <div class="mb-8 text-center">
       ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="mx-auto mb-3 h-16 w-16 rounded-full object-cover" style="border:2px solid ${SLATE_400}"/>` : ''}
-      <h1 class="text-2xl font-light tracking-wide" style="color:${SLATE_500}">${esc(pi.fullName || 'Your Name')}</h1>
+      <h1 class="text-2xl font-light tracking-wide" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
       ${pi.jobTitle ? `<p class="mt-1 text-sm font-light tracking-wider" style="color:${SLATE_400}">${esc(pi.jobTitle)}</p>` : ''}
       ${contacts.length ? `<div class="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs" style="color:${SLATE_400}">${contacts.map(ct => `<span>${esc(ct)}</span>`).join('')}</div>` : ''}
     </div>
     <div class="mx-auto mb-8 h-px w-full" style="background-color:${SLATE_400}"></div>
     ${sections.map(s => `<div class="mb-7" data-section>
-      <h2 class="mb-3 text-xs font-medium uppercase tracking-[0.2em]" style="color:${SLATE_500}">${esc(s.title)}</h2>
+      <h2 class="mb-3 text-xs font-medium uppercase tracking-[0.2em]" style="color:var(--theme-primary-color)">${esc(s.title)}</h2>
       ${buildNordicSectionContent(s, resume.language || 'en')}
     </div>`).join('')}
   </div>`;

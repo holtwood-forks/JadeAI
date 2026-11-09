@@ -69,7 +69,7 @@ export function LuxeTemplate({ resume }: { resume: Resume }) {
             {/* Section header with gold borders */}
             <div className="mb-4 flex items-center gap-3">
               <div className="h-px flex-1" style={{ backgroundColor: GOLD }} />
-              <h2 className="shrink-0 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: GOLD }}>{section.title}</h2>
+              <h2 className="shrink-0 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--theme-primary-color)' }}>{section.title}</h2>
               <div className="h-px flex-1" style={{ backgroundColor: GOLD }} />
             </div>
             <LuxeSectionContent section={section} lang={resume.language} />

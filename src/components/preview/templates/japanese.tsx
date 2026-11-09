@@ -18,7 +18,7 @@ import { degreeField, isSectionEmpty, md } from '../utils';
 import { QrCodesPreview } from '../qr-codes-preview';
 
 const PRIMARY = '#1c1917';
-const ACCENT = '#44403c';
+const ACCENT = '#a8a29e';
 
 export function JapaneseTemplate({ resume }: { resume: Resume }) {
   const personalInfo = resume.sections.find((s) => s.type === 'personal_info');
@@ -31,7 +31,7 @@ export function JapaneseTemplate({ resume }: { resume: Resume }) {
         {pi.avatar && (
           <AvatarImage src={pi.avatar} size={64} avatarStyle={resume.themeConfig?.avatarStyle} className="mx-auto mb-4" style={{ border: `1px solid ${ACCENT}` }} />
         )}
-        <h1 className="text-2xl font-normal tracking-wide" style={{ color: PRIMARY }}>{pi.fullName || 'Your Name'}</h1>
+        <h1 className="text-2xl font-light tracking-wide" style={{ color: PRIMARY }}>{pi.fullName || 'Your Name'}</h1>
         {pi.jobTitle && <p className="mt-2 text-xs font-normal tracking-[0.2em] uppercase" style={{ color: PRIMARY }}>{pi.jobTitle}</p>}
         <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs" style={{ color: PRIMARY }}>
           {pi.age && <span>{pi.age}</span>}
@@ -61,7 +61,7 @@ export function JapaneseTemplate({ resume }: { resume: Resume }) {
             {/* Section header with subtle dot */}
             <div className="mb-4 flex items-center gap-2">
               <span className="inline-block h-1 w-1 rounded-full" style={{ backgroundColor: ACCENT }} />
-              <h2 className="text-xs font-medium uppercase tracking-[0.2em]" style={{ color: PRIMARY }}>{section.title}</h2>
+              <h2 className="text-[10px] font-light uppercase tracking-[0.25em]" style={{ color: 'var(--theme-primary-color)' }}>{section.title}</h2>
             </div>
             <JapaneseSectionContent section={section} lang={resume.language} />
           </div>

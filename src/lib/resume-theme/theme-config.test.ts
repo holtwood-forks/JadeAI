@@ -67,11 +67,31 @@ test('buildThemeCss only emits normalized theme values', () => {
     },
   });
 
-  expect(css).toMatch(/color: #1a1a1a !important/);
-  expect(css).toMatch(/border-color: #ddeeff !important/);
+  expect(css).toMatch(/--theme-primary-color: #1a1a1a/);
+  expect(css).toMatch(/--theme-accent-color: #ddeeff/);
   expect(css).not.toMatch(/color:red/);
-  expect(css).toMatch(/font-family: Inter, sans-serif, "Noto Sans SC" !important/);
-  expect(css).toMatch(/padding-top: 0px !important/);
-  expect(css).toMatch(/padding-right: 60px !important/);
+  expect(css).toMatch(/--theme-font-family: Inter, sans-serif, "Noto Sans SC"/);
+  expect(css).toMatch(/--base-margin-top: 0px/);
+  expect(css).toMatch(/--base-margin-right: 60px/);
   expect(css).toMatch(/--base-section-spacing: 64px/);
+});
+
+test('per-template primary defaults fill in only when the user set no color', () => {
+  // Untouched resume on elegant keeps its designed gold headings.
+  expect(mergeThemeConfig(null, 'elegant').primaryColor).toBe('#d4af37');
+  expect(mergeThemeConfig({}, 'modern').primaryColor).toBe('#e94560');
+  // An explicit color always wins over the template default.
+  expect(mergeThemeConfig({ primaryColor: '#ff0000' }, 'elegant').primaryColor).toBe('#ff0000');
+  // Templates without a registered default fall back to the global default.
+  expect(mergeThemeConfig(null, 'classic').primaryColor).toBe(DEFAULT_THEME.primaryColor);
+  expect(mergeThemeConfig(null).primaryColor).toBe(DEFAULT_THEME.primaryColor);
+});
+
+test('per-template accent defaults fill in for multi-color templates', () => {
+  expect(mergeThemeConfig(null, 'coder').accentColor).toBe('#58a6ff');
+  expect(mergeThemeConfig(null, 'sidebar').accentColor).toBe('#3b82f6');
+  expect(mergeThemeConfig(null, 'developer').accentColor).toBe('#98c379');
+  // Explicit accent wins; templates without an accent default keep global.
+  expect(mergeThemeConfig({ accentColor: '#00ff00' }, 'coder').accentColor).toBe('#00ff00');
+  expect(mergeThemeConfig(null, 'classic').accentColor).toBe(DEFAULT_THEME.accentColor);
 });

@@ -153,7 +153,7 @@ export function buildSidebarHtml(resume: ResumeWithSections): string {
     </div>
     <div class="flex-1 p-6">
       ${mainSections.map(s => `<div class="mb-5" data-section>
-        <h2 class="mb-2 border-b-2 pb-1 text-sm font-bold uppercase tracking-wider" style="color:${SIDEBAR_BG};border-color:${ACCENT}">${esc(s.title)}</h2>
+        <h2 class="mb-2 border-b-2 pb-1 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color);border-color:var(--theme-accent-color)">${esc(s.title)}</h2>
         ${buildSidebarMainContent(s, lang)}
       </div>`).join('')}
     </div>

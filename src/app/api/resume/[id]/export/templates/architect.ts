@@ -105,7 +105,7 @@ export function buildArchitectHtml(resume: ResumeWithSections): string {
         <div class="flex items-center gap-4">
           ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="h-16 w-16 shrink-0 object-cover" style="border:2px solid ${PRIMARY}"/>` : ''}
           <div>
-            <h1 class="text-2xl font-bold uppercase tracking-wider" style="font-family:JetBrains Mono,Consolas,monospace;color:${PRIMARY}">${esc(pi.fullName || 'Your Name')}</h1>
+            <h1 class="text-2xl font-bold uppercase tracking-wider" style="font-family:JetBrains Mono,Consolas,monospace;color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
             ${pi.jobTitle ? `<p class="mt-1 text-sm font-medium uppercase tracking-widest" style="color:${ACCENT}">${esc(pi.jobTitle)}</p>` : ''}
           </div>
         </div>
@@ -121,7 +121,7 @@ export function buildArchitectHtml(resume: ResumeWithSections): string {
     ${sections.map(s => `<div class="mb-6" data-section>
       <div class="mb-3 flex items-center gap-3">
         <div class="h-2.5 w-2.5 rotate-45" style="background-color:${ACCENT}"></div>
-        <h2 class="text-sm font-bold uppercase tracking-[0.15em]" style="font-family:JetBrains Mono,Consolas,monospace;color:${PRIMARY}">${esc(s.title)}</h2>
+        <h2 class="text-sm font-bold uppercase tracking-[0.15em]" style="font-family:JetBrains Mono,Consolas,monospace;color:var(--theme-primary-color)">${esc(s.title)}</h2>
         <div class="h-px flex-1" style="background-color:${PRIMARY};opacity:0.3"></div>
       </div>
       ${buildArchitectSectionContent(s, resume.language || 'en')}

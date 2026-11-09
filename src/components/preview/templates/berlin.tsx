@@ -64,7 +64,7 @@ export function BerlinTemplate({ resume }: { resume: Resume }) {
               {/* Section header with geometric accent */}
               <div className="mb-3 flex items-center gap-2">
                 <div className="h-5 w-5 rounded-full" style={{ backgroundColor: BLUE }} />
-                <h2 className="text-sm font-extrabold uppercase tracking-wider" style={{ color: TEXT }}>{section.title}</h2>
+                <h2 className="text-sm font-extrabold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>{section.title}</h2>
                 <div className="ml-auto h-1 w-12" style={{ backgroundColor: YELLOW }} />
               </div>
               <BerlinSectionContent section={section} lang={resume.language} />
@@ -93,7 +93,7 @@ function BerlinSectionContent({ section, lang }: { section: any; lang?: string }
         {((content as WorkExperienceContent).items || []).map((item: any) => (
           <div key={item.id} className="border-l-4 pl-4" style={{ borderColor: YELLOW }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>{item.position}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.position}</h3>
               <span className="shrink-0 text-xs font-bold" style={{ color: BLUE }}>{item.startDate} &ndash; {item.endDate || (item.current ? (lang === 'zh' ? '至今' : 'Present') : '')}</span>
             </div>
             {item.company && <p className="text-sm font-semibold" style={{ color: BLUE }}>{item.company}{item.location ? `, ${item.location}` : ''}</p>}
@@ -127,7 +127,7 @@ function BerlinSectionContent({ section, lang }: { section: any; lang?: string }
         {((content as EducationContent).items || []).map((item: any) => (
           <div key={item.id} className="border-l-4 pl-4" style={{ borderColor: BLUE }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>{degreeField(item.degree, item.field)}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{degreeField(item.degree, item.field)}</h3>
               <span className="shrink-0 text-xs" style={{ color: BLUE }}>{item.startDate} &ndash; {item.endDate || (lang === 'zh' ? '至今' : 'Present')}</span>
             </div>
             {item.institution && <p className="text-sm font-semibold" style={{ color: YELLOW }}>{item.institution}{item.location ? `, ${item.location}` : ''}</p>}
@@ -260,7 +260,7 @@ function BerlinSectionContent({ section, lang }: { section: any; lang?: string }
         {((content as CustomContent).items || []).map((item: any) => (
           <div key={item.id} className="border-l-4 pl-4" style={{ borderColor: BLUE }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>{item.title}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="shrink-0 text-xs" style={{ color: BLUE }}>{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm font-semibold" style={{ color: YELLOW }}>{item.subtitle}</p>}

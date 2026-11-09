@@ -81,9 +81,7 @@ export function buildDeveloperHtml(resume: ResumeWithSections): string {
   const sections = visibleSections(resume);
   const contacts = [pi.age, pi.politicalStatus, pi.gender, pi.ethnicity, pi.hometown, pi.maritalStatus, pi.yearsOfExperience, pi.educationLevel, pi.email, pi.phone, pi.wechat, pi.location, pi.website].filter(Boolean);
   const DARK = '#282c34';
-  const GREEN = '#98c379';
   const BLUE = '#61afef';
-  const ORANGE = '#e5c07b';
 
   return `<div class="mx-auto max-w-[210mm] bg-white shadow-lg" style="font-family:'JetBrains Mono','Fira Code',monospace">
     <div class="px-8 py-6" style="background:${DARK}">
@@ -96,7 +94,7 @@ export function buildDeveloperHtml(resume: ResumeWithSections): string {
       <div class="flex items-center gap-4">
         ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="h-16 w-16 shrink-0 rounded-lg object-cover"/>` : ''}
         <div>
-          <h1 class="text-2xl font-bold" style="color:${GREEN}">${esc(pi.fullName || 'Your Name')}</h1>
+          <h1 class="text-2xl font-bold" style="color:var(--theme-accent-color)">${esc(pi.fullName || 'Your Name')}</h1>
           ${pi.jobTitle ? `<p class="mt-0.5 text-sm" style="color:${BLUE}">// ${esc(pi.jobTitle)}</p>` : ''}
           ${contacts.length ? `<div class="mt-2 flex flex-wrap gap-3 text-xs text-zinc-400">${contacts.map(c => `<span>${esc(c)}</span>`).join('')}</div>` : ''}
         </div>
@@ -104,7 +102,7 @@ export function buildDeveloperHtml(resume: ResumeWithSections): string {
     </div>
     <div class="p-8">
       ${sections.map(s => `<div class="mb-6" data-section>
-        <h2 class="mb-2 text-sm font-bold" style="color:${ORANGE}">&gt; ${esc(s.title).toUpperCase()}</h2>
+        <h2 class="mb-2 text-sm font-bold" style="color:var(--theme-primary-color)">&gt; ${esc(s.title).toUpperCase()}</h2>
         <div class="border-l-2 pl-4" style="border-color:#3e4451">
           ${buildDeveloperSectionContent(s, resume.language || 'en')}
         </div>

@@ -108,7 +108,7 @@ export function buildCorporateHtml(resume: ResumeWithSections): string {
     </div>
     <div class="p-8">
       ${sections.map(s => `<div class="mb-6" data-section>
-        <h2 class="mb-3 border-b-2 pb-1.5 text-sm font-bold uppercase tracking-wider" style="color:${NAVY};border-color:${BLUE}">${esc(s.title)}</h2>
+        <h2 class="mb-3 border-b-2 pb-1.5 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color);border-color:${BLUE}">${esc(s.title)}</h2>
         ${buildCorporateSectionContent(s, resume.language || 'en')}
       </div>`).join('')}
     </div>

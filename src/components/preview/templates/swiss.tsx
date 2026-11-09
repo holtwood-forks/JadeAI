@@ -33,7 +33,7 @@ export function SwissTemplate({ resume }: { resume: Resume }) {
             <AvatarImage src={pi.avatar} size={64} avatarStyle={resume.themeConfig?.avatarStyle} className="shrink-0" />
           )}
           <div className="flex-1">
-            <h1 className="text-3xl font-bold uppercase tracking-tight" style={{ color: TEXT }}>{pi.fullName || 'Your Name'}</h1>
+            <h1 className="text-3xl font-bold uppercase tracking-tight" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
             {pi.jobTitle && <p className="mt-1 text-sm font-light uppercase tracking-[0.15em]" style={{ color: '#52525b' }}>{pi.jobTitle}</p>}
           </div>
         </div>
@@ -71,7 +71,7 @@ export function SwissTemplate({ resume }: { resume: Resume }) {
               }}
             >
               <span className="inline-block h-2.5 w-2.5 shrink-0" style={{ backgroundColor: RED }} />
-              <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: TEXT }}>{section.title}</h2>
+              <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--theme-primary-color)' }}>{section.title}</h2>
             </div>
             <SwissSectionContent section={section} lang={resume.language} />
           </div>
@@ -97,7 +97,7 @@ function SwissSectionContent({ section, lang }: { section: any; lang?: string })
               <span>{item.startDate} &ndash; {item.endDate || (item.current ? (lang === 'zh' ? '至今' : 'Present') : '')}</span>
             </div>
             <div>
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>{item.position}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.position}</h3>
               {item.company && <p className="text-sm" style={{ color: RED }}>{item.company}</p>}
               {item.description && <p className="mt-1 text-sm" style={{ color: '#3f3f46' }} dangerouslySetInnerHTML={{ __html: md(item.description) }} />}
               {item.technologies?.length > 0 && (
@@ -127,7 +127,7 @@ function SwissSectionContent({ section, lang }: { section: any; lang?: string })
           <div key={item.id} className="grid grid-cols-[140px_1fr] gap-4">
             <span className="text-xs" style={{ color: '#52525b' }}>{item.startDate} &ndash; {item.endDate || (lang === 'zh' ? '至今' : 'Present')}</span>
             <div>
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>{degreeField(item.degree, item.field)}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{degreeField(item.degree, item.field)}</h3>
               {item.institution && <p className="text-sm" style={{ color: RED }}>{item.institution}</p>}
               {item.gpa && <p className="text-xs" style={{ color: '#52525b' }}>GPA: {item.gpa}</p>}
               {item.highlights?.length > 0 && (
@@ -169,7 +169,7 @@ function SwissSectionContent({ section, lang }: { section: any; lang?: string })
               <span className="text-xs" style={{ color: '#52525b' }}>{item.startDate} {'\u2013'} {item.endDate || (lang === 'zh' ? '至今' : 'Present')}</span>
             ) : <span />}
             <div>
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.description && <p className="mt-0.5 text-sm" style={{ color: '#3f3f46' }} dangerouslySetInnerHTML={{ __html: md(item.description) }} />}
               {item.technologies?.length > 0 && (
                 <p className="mt-0.5 text-xs" style={{ color: '#52525b' }}>{lang === 'zh' ? '技术栈' : 'Tech'}: {item.technologies.join(', ')}</p>
@@ -228,7 +228,7 @@ function SwissSectionContent({ section, lang }: { section: any; lang?: string })
           <div key={item.id} className="grid grid-cols-[140px_1fr] gap-4">
             <span className="text-xs" style={{ color: '#52525b' }}>&#11088; {item.stars?.toLocaleString()}</span>
             <div>
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.language && <span className="text-xs" style={{ color: RED }}>{item.language}</span>}
               {item.description && <p className="mt-0.5 text-sm" style={{ color: '#3f3f46' }} dangerouslySetInnerHTML={{ __html: md(item.description) }} />}
             </div>
@@ -245,7 +245,7 @@ function SwissSectionContent({ section, lang }: { section: any; lang?: string })
           <div key={item.id} className="grid grid-cols-[140px_1fr] gap-4">
             {item.date ? <span className="text-xs" style={{ color: '#52525b' }}>{item.date}</span> : <span />}
             <div>
-              <h3 className="text-sm font-bold" style={{ color: TEXT }}>{item.title}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.subtitle && <p className="text-sm" style={{ color: RED }}>{item.subtitle}</p>}
               {item.description && <p className="mt-0.5 text-sm" style={{ color: '#3f3f46' }} dangerouslySetInnerHTML={{ __html: md(item.description) }} />}
             </div>

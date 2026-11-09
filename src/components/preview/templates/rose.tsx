@@ -33,7 +33,7 @@ export function RoseTemplate({ resume }: { resume: Resume }) {
         {pi.avatar && (
           <AvatarImage src={pi.avatar} size={80} avatarStyle={resume.themeConfig?.avatarStyle} className="mx-auto mb-3 border-3" style={{ borderColor: ACCENT }} />
         )}
-        <h1 className="text-2xl font-semibold tracking-wide" style={{ color: PRIMARY }}>{pi.fullName || 'Your Name'}</h1>
+        <h1 className="text-2xl font-semibold tracking-wide" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
         {pi.jobTitle && <p className="mt-1 text-sm" style={{ color: ACCENT }}>{pi.jobTitle}</p>}
         {/* Decorative dots */}
         <div className="mt-3 flex items-center justify-center gap-1">
@@ -70,7 +70,7 @@ export function RoseTemplate({ resume }: { resume: Resume }) {
             {/* Section header with rose accent */}
             <div className="mb-3 flex items-center gap-2">
               <div className="h-0.5 w-6 rounded-full" style={{ backgroundColor: ACCENT }} />
-              <h2 className="text-xs font-semibold uppercase tracking-[0.15em]" style={{ color: PRIMARY }}>{section.title}</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--theme-primary-color)' }}>{section.title}</h2>
             </div>
             <RoseSectionContent section={section} resume={resume} />
           </div>
@@ -96,7 +96,7 @@ function RoseSectionContent({ section, resume }: { section: any; resume: Resume 
         {((content as WorkExperienceContent).items || []).map((item: any) => (
           <div key={item.id} className="rounded-xl border p-4" style={{ borderColor: ROSE_100 }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{item.position}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.position}</h3>
               <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: ROSE_50, color: ACCENT }}>
                 {item.startDate} &ndash; {item.endDate || (item.current ? (resume.language === 'zh' ? '至今' : 'Present') : '')}
               </span>
@@ -132,7 +132,7 @@ function RoseSectionContent({ section, resume }: { section: any; resume: Resume 
         {((content as EducationContent).items || []).map((item: any) => (
           <div key={item.id} className="rounded-xl border p-4" style={{ borderColor: ROSE_100 }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{degreeField(item.degree, item.field)}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{degreeField(item.degree, item.field)}</h3>
               <span className="shrink-0 text-xs" style={{ color: ACCENT }}>{item.startDate} &ndash; {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}</span>
             </div>
             {item.institution && <p className="text-sm" style={{ color: ACCENT }}>{item.institution}</p>}
@@ -182,7 +182,7 @@ function RoseSectionContent({ section, resume }: { section: any; resume: Resume 
         {((content as ProjectsContent).items || []).map((item: any) => (
           <div key={item.id} className="rounded-xl border p-4" style={{ borderColor: ROSE_100 }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{item.name}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="shrink-0 text-xs" style={{ color: ACCENT }}>{item.startDate} {'\u2013'} {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}</span>
               )}
@@ -245,7 +245,7 @@ function RoseSectionContent({ section, resume }: { section: any; resume: Resume 
         {items.map((item: any) => (
           <div key={item.id} className="rounded-xl border p-4" style={{ borderColor: ROSE_100 }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{item.name}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: ROSE_50, color: ACCENT }}>&#11088; {item.stars?.toLocaleString()}</span>
             </div>
             {item.language && <span className="text-xs font-medium" style={{ color: ACCENT }}>{item.language}</span>}
@@ -262,7 +262,7 @@ function RoseSectionContent({ section, resume }: { section: any; resume: Resume 
         {((content as CustomContent).items || []).map((item: any) => (
           <div key={item.id} className="rounded-xl border p-4" style={{ borderColor: ROSE_100 }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{item.title}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="shrink-0 text-xs" style={{ color: ACCENT }}>{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm" style={{ color: ACCENT }}>{item.subtitle}</p>}

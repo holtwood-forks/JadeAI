@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, Eye, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -222,6 +222,38 @@ function buildMockResume(template: string): Resume {
   }) as Resume;
 }
 
+/**
+ * 50 张模板卡各自渲染一个 ResumePreview；配合模板的按需 chunk，
+ * 只有滚到视口附近（提前 400px）才挂载真实预览、拉取对应 chunk，
+ * 模板库页不再一次性下载全部 50 套模板。
+ */
+function LazyPreview({ resume }: { resume: Resume }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      queueMicrotask(() => setVisible(true));
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '400px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return <div ref={ref}>{visible ? <ResumePreview resume={resume} /> : null}</div>;
+}
+
 export default function TemplatesPage() {
   const t = useTranslations();
   const router = useRouter();
@@ -296,7 +328,7 @@ export default function TemplatesPage() {
                     transform: 'translateX(-50%) scale(0.28)',
                   }}
                 >
-                  <ResumePreview resume={mockResume} />
+                  <LazyPreview resume={mockResume} />
                 </div>
               </div>
 

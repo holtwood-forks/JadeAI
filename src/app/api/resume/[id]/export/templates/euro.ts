@@ -97,7 +97,7 @@ export function buildEuroHtml(resume: ResumeWithSections): string {
   return `<div class="mx-auto max-w-[210mm] bg-white shadow-lg" style="font-family:Inter,sans-serif">
     <div class="mb-6 flex items-start gap-6">
       <div class="flex-1">
-        <h1 class="text-3xl font-bold" style="color:${BL}">${esc(pi.fullName || 'Your Name')}</h1>
+        <h1 class="text-3xl font-bold" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
         ${pi.jobTitle ? `<p class="mt-1 text-base text-zinc-500">${esc(pi.jobTitle)}</p>` : ''}
         <div class="mt-3 space-y-0.5 text-sm text-zinc-600">
           ${pi.age ? `<div><span class="inline-block w-20 text-xs font-semibold uppercase text-zinc-400">Age</span>${esc(pi.age)}</div>` : ''}
@@ -123,7 +123,7 @@ export function buildEuroHtml(resume: ResumeWithSections): string {
     <div class="mt-6">
       ${sections.map(s => `<div class="mb-5 flex gap-4" data-section>
         <div class="w-28 shrink-0 pt-0.5 text-right">
-          <h2 class="text-xs font-bold uppercase tracking-wider" style="color:${BL}">${esc(s.title)}</h2>
+          <h2 class="text-xs font-bold uppercase tracking-wider" style="color:var(--theme-primary-color)">${esc(s.title)}</h2>
         </div>
         <div class="flex-1 border-l-2 pl-4" style="border-color:#dbeafe">
           ${buildEuroSectionContent(s, resume.language || 'en')}

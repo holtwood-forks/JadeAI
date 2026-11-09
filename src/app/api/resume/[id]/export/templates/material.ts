@@ -49,7 +49,7 @@ function buildMaterialSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'projects') {
     return `<div class="space-y-3">${((c as ProjectsContent).items || []).map((it: any) => `<div class="rounded-lg bg-zinc-50 p-4">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-semibold" style="color:${PRIMARY}">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs text-zinc-400">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-semibold" style="color:var(--theme-primary-color)">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs text-zinc-400">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
       ${it.description ? `<div class="mt-1 text-sm text-zinc-600">${md(it.description)}</div>` : ''}
       ${it.technologies?.length ? `<div class="mt-1.5 flex flex-wrap gap-1">${it.technologies.map((t: string) => `<span class="rounded-full px-2 py-0.5 text-[10px] font-medium text-white" style="background-color:${PRIMARY}">${esc(t)}</span>`).join('')}</div>` : ''}
       ${it.highlights?.length ? `<ul class="mt-1 list-disc pl-4">${buildHighlights(it.highlights, 'text-sm text-zinc-600')}</ul>` : ''}
@@ -78,7 +78,7 @@ function buildMaterialSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'custom') {
     return `<div class="space-y-3">${((c as CustomContent).items || []).map((it: any) => `<div class="rounded-lg bg-zinc-50 p-4">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-semibold" style="color:${PRIMARY}">${esc(it.title)}</h3>${it.date ? `<span class="text-xs text-zinc-400">${esc(it.date)}</span>` : ''}</div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-semibold" style="color:var(--theme-primary-color)">${esc(it.title)}</h3>${it.date ? `<span class="text-xs text-zinc-400">${esc(it.date)}</span>` : ''}</div>
       ${it.subtitle ? `<p class="text-sm text-zinc-500">${esc(it.subtitle)}</p>` : ''}
       ${it.description ? `<div class="mt-1 text-sm text-zinc-600">${md(it.description)}</div>` : ''}
     </div>`).join('')}</div>`;
@@ -112,7 +112,7 @@ export function buildMaterialHtml(resume: ResumeWithSections): string {
     <div class="p-6 pt-4">
       ${sections.map(s => `<div class="mb-4" data-section>
         <div class="mb-3 rounded-xl bg-white p-5 shadow-sm">
-          <h2 class="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider" style="color:${PRIMARY}"><span class="inline-block h-5 w-1 rounded-full" style="background-color:${VIOLET}"></span>${esc(s.title)}</h2>
+          <h2 class="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color)"><span class="inline-block h-5 w-1 rounded-full" style="background-color:${VIOLET}"></span>${esc(s.title)}</h2>
           ${buildMaterialSectionContent(s, resume.language || 'en')}
         </div>
       </div>`).join('')}

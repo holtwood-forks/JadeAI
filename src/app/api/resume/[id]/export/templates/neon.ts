@@ -26,7 +26,7 @@ function buildNeonSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'work_experience') {
     return `<div class="space-y-4">${((c as WorkExperienceContent).items || []).map((it: any) => `<div class="rounded-lg p-4" style="border:1px solid ${CYAN}20;background-color:${CYAN}05">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${CYAN}">${esc(it.position)}</h3><span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold" style="color:${BG};background-color:${VIOLET};box-shadow:0 0 8px ${VIOLET}40">${esc(it.startDate)} - ${esc(it.endDate) || (it.current ? (lang === 'zh' ? '至今' : 'Present') : '')}</span></div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-safe-on-dark)${CYAN}">${esc(it.position)}</h3><span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold" style="color:${BG};background-color:${VIOLET};box-shadow:0 0 8px ${VIOLET}40">${esc(it.startDate)} - ${esc(it.endDate) || (it.current ? (lang === 'zh' ? '至今' : 'Present') : '')}</span></div>
       ${it.company ? `<p class="text-sm font-medium" style="color:${VIOLET}">${esc(it.company)}</p>` : ''}
       ${it.description ? `<div class="mt-1 text-sm" style="color:${TEXT}">${md(it.description)}</div>` : ''}
       ${it.technologies?.length ? `<div class="mt-2 flex flex-wrap gap-1">${it.technologies.map((t: string, i: number) => { const clr = i % 2 === 0 ? CYAN : VIOLET; return `<span class="rounded-full px-2 py-0.5 text-[10px] font-medium" style="color:${BG};background-color:${clr};box-shadow:0 0 6px ${clr}40">${esc(t)}</span>`; }).join('')}</div>` : ''}
@@ -36,7 +36,7 @@ function buildNeonSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'education') {
     return `<div class="space-y-3">${((c as EducationContent).items || []).map((it: any) => `<div class="rounded-lg p-4" style="border:1px solid ${VIOLET}20;background-color:${VIOLET}05">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${CYAN}">${esc(it.institution)}</h3><span class="text-xs" style="color:${TEXT_DIM}">${esc(it.startDate)} - ${esc(it.endDate) || (lang === 'zh' ? '至今' : 'Present')}</span></div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-safe-on-dark)${CYAN}">${esc(it.institution)}</h3><span class="text-xs" style="color:${TEXT_DIM}">${esc(it.startDate)} - ${esc(it.endDate) || (lang === 'zh' ? '至今' : 'Present')}</span></div>
       <p class="text-sm" style="color:${TEXT}">${esc(degreeField(it.degree, it.field))}</p>
       ${it.gpa ? `<p class="text-xs" style="color:${VIOLET}">GPA: ${esc(it.gpa)}</p>` : ''}
       ${it.highlights?.length ? `<ul class="mt-1 space-y-0.5">${it.highlights.filter(Boolean).map((h: string) => `<li class="flex items-start gap-2 text-sm" style="color:${TEXT}"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style="background-color:${VIOLET};box-shadow:0 0 6px ${VIOLET}"></span>${md(h)}</li>`).join('')}</ul>` : ''}
@@ -55,7 +55,7 @@ function buildNeonSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'projects') {
     return `<div class="space-y-3">${((c as ProjectsContent).items || []).map((it: any) => `<div class="rounded-lg p-4" style="border:1px solid ${CYAN}20;background-color:${CYAN}05">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${CYAN}">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs" style="color:${TEXT_DIM}">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-safe-on-dark)${CYAN}">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs" style="color:${TEXT_DIM}">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
       ${it.description ? `<div class="mt-0.5 text-sm" style="color:${TEXT}">${md(it.description)}</div>` : ''}
       ${it.technologies?.length ? `<div class="mt-2 flex flex-wrap gap-1">${it.technologies.map((t: string, i: number) => { const clr = i % 2 === 0 ? CYAN : VIOLET; return `<span class="rounded-full px-2 py-0.5 text-[10px] font-medium" style="color:${BG};background-color:${clr};box-shadow:0 0 6px ${clr}40">${esc(t)}</span>`; }).join('')}</div>` : ''}
       ${it.highlights?.length ? `<ul class="mt-1.5 space-y-0.5">${it.highlights.filter(Boolean).map((h: string) => `<li class="flex items-start gap-2 text-sm" style="color:${TEXT}"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style="background-color:${CYAN};box-shadow:0 0 6px ${CYAN}"></span>${md(h)}</li>`).join('')}</ul>` : ''}
@@ -84,7 +84,7 @@ function buildNeonSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'custom') {
     return `<div class="space-y-3">${((c as CustomContent).items || []).map((it: any) => `<div class="rounded-lg p-4" style="border:1px solid ${CYAN}20;background-color:${CYAN}05">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${CYAN}">${esc(it.title)}</h3>${it.date ? `<span class="text-xs" style="color:${TEXT_DIM}">${esc(it.date)}</span>` : ''}</div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-safe-on-dark)${CYAN}">${esc(it.title)}</h3>${it.date ? `<span class="text-xs" style="color:${TEXT_DIM}">${esc(it.date)}</span>` : ''}</div>
       ${it.subtitle ? `<p class="text-sm" style="color:${VIOLET}">${esc(it.subtitle)}</p>` : ''}
       ${it.description ? `<div class="mt-1 text-sm" style="color:${TEXT}">${md(it.description)}</div>` : ''}
     </div>`).join('')}</div>`;
@@ -109,7 +109,7 @@ export function buildNeonHtml(resume: ResumeWithSections): string {
       <div class="flex items-center gap-5">
         ${pi.avatar ? `<div class="shrink-0 rounded-lg p-0.5" style="border:2px solid ${CYAN};box-shadow:0 0 12px ${CYAN}60"><img src="${esc(pi.avatar)}" alt="" class="h-20 w-20 rounded-lg object-cover"/></div>` : ''}
         <div>
-          <h1 class="text-3xl font-extrabold tracking-tight" style="color:${CYAN};text-shadow:0 0 20px ${CYAN}60">${esc(pi.fullName || 'Your Name')}</h1>
+          <h1 class="text-3xl font-extrabold tracking-tight" style="color:var(--theme-primary-safe-on-dark);text-shadow:0 0 20px var(--theme-primary-alpha-60)">${esc(pi.fullName || 'Your Name')}</h1>
           ${pi.jobTitle ? `<p class="mt-1 text-sm font-medium" style="color:${VIOLET};text-shadow:0 0 10px ${VIOLET}40">${esc(pi.jobTitle)}</p>` : ''}
           ${contacts.length ? `<div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs" style="color:${TEXT_DIM}">${contacts.map((c, i) => `<span class="flex items-center gap-1.5">${esc(c)}${i < contacts.length - 1 ? `<span style="color:${CYAN}40">|</span>` : ''}</span>`).join('')}</div>` : ''}
         </div>
@@ -117,7 +117,7 @@ export function buildNeonHtml(resume: ResumeWithSections): string {
     </div>
     <div class="p-8 pt-6">
       ${sections.map(s => `<div class="mb-6" data-section>
-        <div class="mb-3 flex items-center gap-3"><h2 class="text-sm font-extrabold uppercase tracking-widest" style="color:${CYAN};text-shadow:0 0 10px ${CYAN}40">${esc(s.title)}</h2><div class="h-px flex-1" style="background:linear-gradient(90deg,${CYAN}40,transparent)"></div></div>
+        <div class="mb-3 flex items-center gap-3"><h2 class="text-sm font-extrabold uppercase tracking-widest" style="color:var(--theme-primary-safe-on-dark);text-shadow:0 0 10px var(--theme-primary-alpha-40)">${esc(s.title)}</h2><div class="h-px flex-1" style="background:linear-gradient(90deg,var(--theme-primary-alpha-40),transparent)"></div></div>
         ${buildNeonSectionContent(s, resume.language || 'en')}
       </div>`).join('')}
     </div>

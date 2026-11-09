@@ -96,7 +96,7 @@ export function buildExecutiveHtml(resume: ResumeWithSections): string {
     </div>
     <div class="p-8">
       ${sections.map(s => `<div class="mb-6" data-section>
-        <h2 class="mb-3 border-b-2 pb-1 text-sm font-bold uppercase tracking-wider" style="color:${CHARCOAL};border-color:${EMERALD}">${esc(s.title)}</h2>
+        <h2 class="mb-3 border-b-2 pb-1 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color);border-color:${EMERALD}">${esc(s.title)}</h2>
         ${buildExecutiveSectionContent(s, resume.language || 'en')}
       </div>`).join('')}
     </div>

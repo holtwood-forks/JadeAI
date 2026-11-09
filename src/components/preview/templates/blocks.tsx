@@ -41,7 +41,7 @@ export function BlocksTemplate({ resume }: { resume: Resume }) {
             />
           )}
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>{pi.fullName || 'Your Name'}</h1>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
             {pi.jobTitle && (
               <p className="mt-0.5 text-sm" style={{ color: '#787774' }}>{pi.jobTitle}</p>
             )}
@@ -66,7 +66,7 @@ export function BlocksTemplate({ resume }: { resume: Resume }) {
           <div key={section.id} className="mb-5" data-section>
             <div className="mb-2 flex items-center gap-2">
               <span className="text-sm" style={{ color: '#9b9a97' }}>&#9654;</span>
-              <h2 className="text-sm font-semibold" style={{ color: PRIMARY }}>
+              <h2 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>
                 {section.title}
               </h2>
             </div>
@@ -98,7 +98,7 @@ function BlocksSectionContent({ section, resume }: { section: any; resume: Resum
         {items.map((item: any) => (
           <div key={item.id} className="rounded-md border p-3" style={{ borderColor: '#e3e2de' }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{item.position}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.position}</h3>
               <span className="shrink-0 text-xs" style={{ color: '#9b9a97' }}>
                 {item.startDate} - {item.endDate || (item.current ? (resume.language === 'zh' ? '至今' : 'Present') : '')}
               </span>
@@ -134,7 +134,7 @@ function BlocksSectionContent({ section, resume }: { section: any; resume: Resum
         {items.map((item: any) => (
           <div key={item.id} className="rounded-md border p-3" style={{ borderColor: '#e3e2de' }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{item.institution}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.institution}</h3>
               <span className="text-xs" style={{ color: '#9b9a97' }}>{item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}</span>
             </div>
             <p className="text-sm" style={{ color: '#787774' }}>{degreeField(item.degree, item.field)}{item.location ? ` , ${item.location}` : ''}</p>
@@ -274,7 +274,7 @@ function BlocksSectionContent({ section, resume }: { section: any; resume: Resum
         {items.map((item: any) => (
           <div key={item.id} className="rounded-md border p-3" style={{ borderColor: '#e3e2de' }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{item.title}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="text-xs" style={{ color: '#9b9a97' }}>{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm" style={{ color: '#9b9a97' }}>{item.subtitle}</p>}

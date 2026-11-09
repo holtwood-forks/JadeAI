@@ -75,7 +75,11 @@ export function normalizeSectionContent(type: string, rawContent: unknown): Reco
       categories: cats.map((c) => {
         const cat = asObject(c);
         if (!cat) return { id: genId(), name: '', skills: [] };
-        return { ...cat, id: cat.id || genId(), skills: toStringArray(cat.skills) };
+        // Same rule as ITEM_ARRAY_FIELDS below: only heal a wrong-typed field.
+        // A real array may hold '' rows the user is still typing into;
+        // stripping them here makes freshly added skills vanish on autosave.
+        const skills = Array.isArray(cat.skills) ? cat.skills : toStringArray(cat.skills);
+        return { ...cat, id: cat.id || genId(), skills };
       }),
     };
   }

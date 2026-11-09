@@ -19,7 +19,7 @@ export function TimelineTemplate({ resume }: { resume: Resume }) {
         {pi.avatar && (
           <AvatarImage src={pi.avatar} avatarStyle={resume.themeConfig?.avatarStyle} size={72} className="mx-auto mb-3" style={{ border: `2px solid ${ACCENT}` }} />
         )}
-        <h1 className="text-2xl font-bold" style={{ color: BLUE_GRAY }}>{pi.fullName || 'Your Name'}</h1>
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
         {pi.jobTitle && <p className="mt-0.5 text-base" style={{ color: ACCENT }}>{pi.jobTitle}</p>}
         <div className="mt-2 flex flex-wrap items-center justify-center gap-3 text-sm text-zinc-500">
           {pi.age && <span>{pi.age}</span>}
@@ -45,7 +45,7 @@ export function TimelineTemplate({ resume }: { resume: Resume }) {
         .filter((s) => s.visible && s.type !== 'personal_info' && !isSectionEmpty(s))
         .map((section) => (
           <div key={section.id} className="mb-6" data-section>
-            <h2 className="mb-3 text-sm font-bold uppercase tracking-wider" style={{ color: BLUE_GRAY }}>
+            <h2 className="mb-3 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
               {section.title}
             </h2>
             <TimelineSectionContent section={section} resume={resume} />

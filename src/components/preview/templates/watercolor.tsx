@@ -45,7 +45,7 @@ export function WatercolorTemplate({ resume }: { resume: Resume }) {
             />
           )}
           <div>
-            <h1 className="text-3xl font-bold" style={{ color: PRIMARY }}>
+            <h1 className="text-3xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>
               {pi.fullName || 'Your Name'}
             </h1>
             {pi.jobTitle && (
@@ -72,7 +72,7 @@ export function WatercolorTemplate({ resume }: { resume: Resume }) {
           <div key={section.id} className="mb-5" data-section>
             <div className="mb-2 flex items-center gap-2">
               <div className="h-6 w-1.5 rounded-full" style={{ background: `linear-gradient(to bottom, ${ACCENT}, ${PRIMARY})` }} />
-              <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: PRIMARY }}>
+              <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
                 {section.title}
               </h2>
             </div>
@@ -102,7 +102,7 @@ function WatercolorSectionContent({ section, lang }: { section: any; lang?: stri
         {items.map((item: any) => (
           <div key={item.id} className="rounded-xl p-4" style={{ backgroundColor: `${WASH}` }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.position}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.position}</h3>
               <span className="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold text-white" style={{ background: `linear-gradient(135deg, ${ACCENT}, ${PRIMARY})` }}>
                 {item.startDate} - {item.endDate || (item.current ? (lang === 'zh' ? '至今' : 'Present') : '')}
               </span>
@@ -141,7 +141,7 @@ function WatercolorSectionContent({ section, lang }: { section: any; lang?: stri
         {items.map((item: any) => (
           <div key={item.id} className="rounded-xl p-4" style={{ backgroundColor: WASH }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.institution}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.institution}</h3>
               <span className="text-xs" style={{ color: TEXT }}>{item.startDate} - {item.endDate || (lang === 'zh' ? '至今' : 'Present')}</span>
             </div>
             <p className="text-sm" style={{ color: TEXT_DARK }}>{degreeField(item.degree, item.field)}</p>
@@ -193,7 +193,7 @@ function WatercolorSectionContent({ section, lang }: { section: any; lang?: stri
         {items.map((item: any) => (
           <div key={item.id} className="rounded-xl p-4" style={{ backgroundColor: WASH }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="text-xs" style={{ color: TEXT }}>
                   {item.startDate} - {item.endDate || (lang === 'zh' ? '至今' : 'Present')}
@@ -262,7 +262,7 @@ function WatercolorSectionContent({ section, lang }: { section: any; lang?: stri
         {items.map((item: any) => (
           <div key={item.id} className="rounded-xl p-4" style={{ backgroundColor: WASH }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.title}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="text-xs" style={{ color: TEXT }}>{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm" style={{ color: ACCENT }}>{item.subtitle}</p>}

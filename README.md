@@ -124,6 +124,7 @@ JadeAI 是一个面向简历编辑、AI 优化和求职准备的全栈应用。�
 - **分享链接**：支持密码保护与访问统计
 - **浏览统计**：追踪分享简历的查看次数
 - **本地 PDF 渲染依赖**：优先使用系统 Chrome / Chromium。生产环境建议设置 `CHROME_PATH` 指向已安装的浏览器；如确实需要运行时下载 bundled Chromium，必须显式设置 `ALLOW_CHROMIUM_DOWNLOAD=true`。
+- **WSL 开发注意**：WSL 下常在 `~/.local/bin` 放置 bash 包装脚本把浏览器命令转发到 Windows `chrome.exe`。此类包装脚本经实测可用于 PDF 导出（Puppeteer 经 WSL interop 直接驱动 Windows Chrome）；若你的环境中浏览器启动阶段挂起，再设置 `CHROME_PATH` 指向 Linux 原生浏览器（如 `chrome-headless-shell`）。
 - **PDF 分页引擎**：`fit-one-page` 与 `prevent-blank-page` 现在共用同一个分页策略入口，并可在 `node --import tsx scripts/benchmark-pdf-layout.ts` 中输出分页 telemetry，便于比较不同渲染引擎与压缩效果。
 
 ### 简历管理
@@ -351,12 +352,13 @@ DATABASE_URL=postgresql://user:pass@host:5432/jadeai
 
 #### 生产模式启动（standalone）
 
-`next.config.ts` 使用 `output: 'standalone'`，因此 `pnpm start`（即 `next start`）不可用。生产构建后请直接运行 standalone 产物：
+standalone 产物只在 `NEXT_OUTPUT=standalone` 时生成（Dockerfile 已内置该变量），裸机构建需显式开启，`pnpm start`（即 `next start`）也不适用于 standalone 产物：
 
 ```bash
-pnpm build
+NEXT_OUTPUT=standalone pnpm build
 PORT=3000 HOSTNAME=0.0.0.0 node .next/standalone/server.js
 # 或
+pnpm build:standalone
 pnpm start:standalone
 ```
 
@@ -473,7 +475,8 @@ src/
 | 命令 | 说明 |
 |---|---|
 | `pnpm dev` | 启动开发服务器 |
-| `pnpm build` | 生产构建 |
+| `pnpm build` | 生产构建（不含 standalone 产物） |
+| `pnpm build:standalone` | 生成 standalone 产物，用于裸机/Docker |
 | `pnpm type-check` | TypeScript 类型检查 |
 | `pnpm lint` | ESLint 检查 |
 | `pnpm db:generate` | 生成 SQLite 迁移 |

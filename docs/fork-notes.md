@@ -8,7 +8,7 @@
 - 最近同步：2026-10-04 → 上游 `aca6fbb`（本仓库 merge `b7402d5`）。此后上游 main 无新提交。
 - 2026-10-21 选择性移植上游 PR #101（`feat/pdf-continuous`）：采纳连续长页、快照 POST 导出、渲染超时/取消/并发保护；**未合并**该分支，因为它与 fork 的 `pagination-strategy.ts` 是两套 PDF 管线，直接 merge 会冲突 12 个文件并造成静默功能倒退。
 - 截至 2026-10-04 同步（v0.7.0）：fork 领先上游约百个提交（精确值用 `git rev-list --count upstream/main..main` 查询）。
-- 版本约定：fork 与上游**共享版本号**（当前 v0.7.0），tag 指向上游对应版本的基线提交（origin 上亦如此），fork 自身增量只在 main 上；仓库不创建 GitHub Release，Docker 镜像从 main HEAD 构建。
+- 版本约定（**2026-10-25 起变更**）：v0.8.0 之前 fork 与上游共享版本号、tag 指向上游基线、不创建 GitHub Release。自 v0.8.0 起 fork 领先幅度已形成完整的自有功能面（模板主题化体系、性能优化等 30+ 提交），改为**独立发版**：版本号仍以 `package.json` 为唯一来源（对齐 AGENTS.md），`v<version>` tag 打在 fork 自身提交上，创建 GitHub Release；Docker 镜像 tag 同步（见下）。若未来上游发布同名版本号，fork 的 tag 优先保留、上游基线改用 `upstream/v<version>` 标注。
 - 定位差异：fork 删除 Electron 桌面客户端及 `desktop-release.yml`，新增/重写 Docker 构建运行链、GitHub Pages 站点、CI 工作流、PDF 分页策略与主题系统等。
 
 ## 2. 自有模块（零冲突区）
@@ -127,3 +127,7 @@ grep -ri launchai src/ messages/ README.md
 提醒 issue 依赖仓库的 Issues 功能：holtwood-projects/JadeAI 已于 2026-10-04 开启（GitHub fork 默认关闭 Issues；其他仓库复用本 workflow 前需在 Settings → General → Features 勾选 Issues，否则 `gh issue create` 会失败）。提醒正文由 `printf` 参数生成，上游提交信息即使含反引号等字符也只会按字面渲染，无命令注入风险。
 
 **启用前提（重要）**：GitHub fork 上定时 workflow **默认禁用**——推送后需在 Actions 页找到 Upstream Sync Check 手动 Enable；另外仓库 60 天无活动时 GitHub 会自动停用定时任务，届时同样在 Actions 页重新启用。
+
+## 9. gh CLI 默认仓库（2026-10-25）
+
+本仓库是 fork，同时配置 origin（holtwood-projects/JadeAI）与 upstream（LingyiChen-AI/JadeAI）两个 remote。gh CLI 对 fork 仓库**默认解析到 upstream**，导致 `gh run view/watch`、`gh issue` 等命令不带 `-R` 时 404。已用 `gh repo set-default holtwood-projects/JadeAI` 持久化默认仓库（配置存于本机 `~/.config/gh/config.yml` 的仓库级 `[repo]` 段，不随仓库走）——**新环境克隆后需重跑一次该命令**。

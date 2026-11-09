@@ -151,7 +151,7 @@ export function SidebarTemplate({ resume }: { resume: Resume }) {
       <div className="flex-1 p-6">
         {mainSections.map((section) => (
           <div key={section.id} className="mb-5" data-section>
-            <h2 className="mb-2 border-b-2 pb-1 text-sm font-bold uppercase tracking-wider" style={{ color: SIDEBAR_BG, borderColor: ACCENT }}>
+            <h2 className="mb-2 border-b-2 pb-1 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)', borderColor: 'var(--theme-accent-color)' }}>
               {section.title}
             </h2>
             <MainSectionContent section={section} resume={resume} />

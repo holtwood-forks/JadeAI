@@ -102,13 +102,13 @@ export function buildLegalHtml(resume: ResumeWithSections): string {
   return `<div class="mx-auto max-w-[210mm] bg-white shadow-lg" style="font-family:Georgia,Times New Roman,serif">
     <div class="mb-6 text-center">
       ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="mx-auto mb-3 h-16 w-16 rounded-full object-cover" style="border:2px solid ${PRIMARY}"/>` : ''}
-      <h1 class="text-2xl font-bold tracking-wide" style="color:${PRIMARY}">${esc(pi.fullName || 'Your Name')}</h1>
+      <h1 class="text-2xl font-bold tracking-wide" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
       ${pi.jobTitle ? `<p class="mt-1 text-sm italic" style="color:${ACCENT}">${esc(pi.jobTitle)}</p>` : ''}
       ${contacts.length || pi.linkedin || pi.github ? `<div class="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs" style="color:${MUTED}">${contacts.map(ct => `<span>${esc(ct)}</span>`).join('')}${pi.linkedin ? `<span>LinkedIn: ${esc(pi.linkedin)}</span>` : ''}${pi.github ? `<span>GitHub: ${esc(pi.github)}</span>` : ''}</div>` : ''}
     </div>
     <div class="mb-6"><div class="h-px w-full" style="background-color:${BORDER}"></div><div class="mt-0.5 h-px w-full" style="background-color:${BORDER}"></div></div>
     ${sections.map(s => `<div class="mb-6" data-section>
-      <h2 class="mb-1 text-sm font-bold uppercase tracking-wider" style="color:${PRIMARY}">${esc(s.title)}</h2>
+      <h2 class="mb-1 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color)">${esc(s.title)}</h2>
       <div class="mb-3"><div class="h-px w-full" style="background-color:${BORDER};opacity:0.5"></div><div class="mt-0.5 h-px w-full" style="background-color:${BORDER};opacity:0.5"></div></div>
       ${buildLegalSectionContent(s, resume.language || 'en')}
     </div>`).join('')}

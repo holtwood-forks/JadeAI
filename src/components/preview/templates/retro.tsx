@@ -34,7 +34,7 @@ export function RetroTemplate({ resume }: { resume: Resume }) {
         {pi.avatar && (
           <AvatarImage src={pi.avatar} avatarStyle={resume.themeConfig?.avatarStyle} size={80} className="mx-auto mb-3" style={{ border: `2px solid ${PRIMARY}` }} />
         )}
-        <h1 className="text-3xl font-bold" style={{ color: PRIMARY, fontFamily: "'Courier New', monospace" }}>
+        <h1 className="text-3xl font-bold" style={{ color: 'var(--theme-primary-color)', fontFamily: "'Courier New', monospace" }}>
           {pi.fullName || 'Your Name'}
         </h1>
         {pi.jobTitle && (
@@ -64,7 +64,7 @@ export function RetroTemplate({ resume }: { resume: Resume }) {
         .map((section, idx, arr) => (
           <div key={section.id} data-section>
             <div className="mb-2 text-center">
-              <h2 className="inline-block px-4 text-xs font-bold uppercase tracking-[0.3em]" style={{ color: PRIMARY, borderBottom: `1px solid ${PRIMARY}`, borderTop: `1px solid ${PRIMARY}`, padding: '4px 16px' }}>
+              <h2 className="inline-block px-4 text-xs font-bold uppercase tracking-[0.3em]" style={{ color: 'var(--theme-primary-color)', borderBottom: '1px solid var(--theme-primary-color)', borderTop: '1px solid var(--theme-primary-color)', padding: '4px 16px' }}>
                 {section.title}
               </h2>
             </div>
@@ -104,7 +104,7 @@ function RetroSectionContent({ section, resume }: { section: any; resume: Resume
         {items.map((item: any) => (
           <div key={item.id}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.position}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.position}</h3>
               <span className="shrink-0 text-xs" style={{ color: ACCENT, fontFamily: "'Courier New', monospace" }}>
                 {item.startDate} - {item.endDate || (item.current ? (resume.language === 'zh' ? '至今' : 'Present') : '')}
               </span>
@@ -139,7 +139,7 @@ function RetroSectionContent({ section, resume }: { section: any; resume: Resume
         {items.map((item: any) => (
           <div key={item.id}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.institution}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.institution}</h3>
               <span className="text-xs" style={{ color: ACCENT, fontFamily: "'Courier New', monospace" }}>{item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}</span>
             </div>
             <p className="text-sm" style={{ color: '#57534e' }}>{degreeField(item.degree, item.field)}</p>
@@ -181,7 +181,7 @@ function RetroSectionContent({ section, resume }: { section: any; resume: Resume
         {items.map((item: any) => (
           <div key={item.id}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="text-xs" style={{ color: ACCENT, fontFamily: "'Courier New', monospace" }}>
                   {item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}
@@ -264,7 +264,7 @@ function RetroSectionContent({ section, resume }: { section: any; resume: Resume
         {items.map((item: any) => (
           <div key={item.id}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.title}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="text-xs" style={{ color: ACCENT, fontFamily: "'Courier New', monospace" }}>{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm italic" style={{ color: ACCENT }}>{item.subtitle}</p>}

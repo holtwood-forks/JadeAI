@@ -113,7 +113,7 @@ export function buildLuxeHtml(resume: ResumeWithSections): string {
     ${sections.map(s => `<div class="mb-7" data-section>
       <div class="mb-4 flex items-center gap-3">
         <div class="h-px flex-1" style="background-color:${GOLD}"></div>
-        <h2 class="shrink-0 text-xs font-bold uppercase tracking-[0.2em]" style="color:${GOLD}">${esc(s.title)}</h2>
+        <h2 class="shrink-0 text-xs font-bold uppercase tracking-[0.2em]" style="color:var(--theme-primary-color)">${esc(s.title)}</h2>
         <div class="h-px flex-1" style="background-color:${GOLD}"></div>
       </div>
       ${buildLuxeSectionContent(s, resume.language || 'en')}

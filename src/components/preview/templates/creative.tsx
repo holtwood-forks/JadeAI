@@ -66,7 +66,7 @@ export function CreativeTemplate({ resume }: { resume: Resume }) {
             <div key={section.id} className="mb-6" data-section>
               <div className="mb-3 flex items-center gap-3">
                 <div className="h-8 w-1 rounded-full" style={{ background: GRADIENT }} />
-                <h2 className="text-base font-extrabold uppercase tracking-wide" style={{ color: PRIMARY }}>
+                <h2 className="text-base font-extrabold uppercase tracking-wide" style={{ color: 'var(--theme-primary-color)' }}>
                   {section.title}
                 </h2>
               </div>
@@ -195,7 +195,7 @@ function CreativeSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="rounded-lg border border-zinc-100 p-4">
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="text-xs text-zinc-400">
                   {item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}
@@ -282,7 +282,7 @@ function CreativeSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="rounded-lg border border-zinc-100 p-4">
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.title}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="text-xs text-zinc-400">{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm text-zinc-500">{item.subtitle}</p>}

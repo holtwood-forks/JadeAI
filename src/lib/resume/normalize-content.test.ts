@@ -44,6 +44,13 @@ describe('normalizeSectionContent — heals renderer-crashing shapes (issue #87)
     expect((out.categories as any[])[0].skills).toEqual(['Go', 'Rust']);
   });
 
+  it('keeps empty-string entries in a skills array (blank row being edited)', () => {
+    const out = normalizeSectionContent('skills', {
+      categories: [{ id: 'c1', name: 'Langs', skills: ['Go', ''] }],
+    });
+    expect((out.categories as any[])[0].skills).toEqual(['Go', '']);
+  });
+
   it('replaces a non-array items with an empty array', () => {
     const out = normalizeSectionContent('education', { items: 'oops' } as any);
     expect(out.items).toEqual([]);

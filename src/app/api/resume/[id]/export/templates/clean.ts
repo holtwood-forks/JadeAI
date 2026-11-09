@@ -119,7 +119,7 @@ export function buildCleanHtml(resume: ResumeWithSections): string {
       <div class="flex items-center gap-4">
         ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="h-16 w-16 shrink-0 rounded-full border-2 object-cover" style="border-color:${BL}"/>` : ''}
         <div>
-          <h1 class="text-2xl font-bold" style="color:${BL}">${esc(pi.fullName || 'Your Name')}</h1>
+          <h1 class="text-2xl font-bold" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
           ${pi.jobTitle ? `<p class="mt-0.5 text-base" style="color:${TL}">${esc(pi.jobTitle)}</p>` : ''}
         </div>
       </div>
@@ -127,7 +127,7 @@ export function buildCleanHtml(resume: ResumeWithSections): string {
       <div class="mt-3 h-0.5 w-full rounded" style="background:linear-gradient(90deg,${BL},${TL})"></div>
     </div>
     ${sections.map(s => `<div class="mb-5" data-section>
-      <h2 class="mb-2 text-sm font-bold uppercase tracking-wider" style="color:${BL}">${esc(s.title)}</h2>
+      <h2 class="mb-2 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color)">${esc(s.title)}</h2>
       ${buildCleanSectionContent(s, resume.language || 'en')}
     </div>`).join('')}
   </div>`;

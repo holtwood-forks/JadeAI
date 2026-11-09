@@ -1,8 +1,8 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { use, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import dynamic from 'next/dynamic';
 import { useEditor } from '@/hooks/use-editor';
 import { useFingerprint } from '@/hooks/use-fingerprint';
 import { useIsMobile } from '@/hooks/use-media-query';
@@ -12,7 +12,13 @@ import { EditorCanvas } from '@/components/editor/editor-canvas';
 import { ThemeEditor } from '@/components/editor/theme-editor';
 import { EditorPreviewPanel } from '@/components/editor/editor-preview-panel';
 import { EditorMobileTabBar } from '@/components/editor/editor-mobile-tab-bar';
-import { AIChatBubble } from '@/components/ai/ai-chat-bubble';
+// The AI bubble statically pulls the heaviest client chain (AI SDK + zod +
+// react-markdown stack ≈ 580KB minified). It is collapsed by default, so
+// lazy-mount it: the editor first-load stops shipping the whole AI stack and
+// the chunks arrive when the user actually opens the chat.
+const AIChatBubble = dynamic(() =>
+  import('@/components/ai/ai-chat-bubble').then((m) => m.AIChatBubble),
+);
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { List } from "lucide-react";
 import { SettingsDialog } from '@/components/settings/settings-dialog';

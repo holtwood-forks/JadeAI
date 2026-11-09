@@ -32,7 +32,7 @@ export function CleanTemplate({ resume }: { resume: Resume }) {
             <AvatarImage src={pi.avatar} avatarStyle={resume.themeConfig?.avatarStyle} size={64} className="shrink-0" style={{ border: `2px solid ${BLUE}` }} />
           )}
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: BLUE }}>{pi.fullName || 'Your Name'}</h1>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
             {pi.jobTitle && <p className="mt-0.5 text-base" style={{ color: TEAL }}>{pi.jobTitle}</p>}
           </div>
         </div>
@@ -61,7 +61,7 @@ export function CleanTemplate({ resume }: { resume: Resume }) {
         .filter((s) => s.visible && s.type !== 'personal_info' && !isSectionEmpty(s))
         .map((section) => (
           <div key={section.id} className="mb-5" data-section>
-            <h2 className="mb-2 text-sm font-bold uppercase tracking-wider" style={{ color: BLUE }}>{section.title}</h2>
+            <h2 className="mb-2 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>{section.title}</h2>
             <CleanSectionContent section={section} resume={resume} />
           </div>
         ))}

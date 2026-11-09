@@ -22,7 +22,7 @@ export function LegalTemplate({ resume }: { resume: Resume }) {
         {pi.avatar && (
           <AvatarImage src={pi.avatar} size={64} avatarStyle={resume.themeConfig?.avatarStyle} className="mx-auto mb-3" style={{ border: `2px solid ${PRIMARY}` }} />
         )}
-        <h1 className="text-2xl font-bold tracking-wide" style={{ color: PRIMARY }}>
+        <h1 className="text-2xl font-bold tracking-wide" style={{ color: 'var(--theme-primary-color)' }}>
           {pi.fullName || 'Your Name'}
         </h1>
         {pi.jobTitle && (
@@ -58,7 +58,7 @@ export function LegalTemplate({ resume }: { resume: Resume }) {
         .filter((s) => s.visible && s.type !== 'personal_info' && !isSectionEmpty(s))
         .map((section) => (
           <div key={section.id} className="mb-6" data-section>
-            <h2 className="mb-1 text-sm font-bold uppercase tracking-wider" style={{ color: PRIMARY }}>
+            <h2 className="mb-1 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
               {section.title}
             </h2>
             {/* Double-line under section header */}

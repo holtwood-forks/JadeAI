@@ -63,7 +63,7 @@ export function ArtisticTemplate({ resume }: { resume: Resume }) {
           .map((section) => (
             <div key={section.id} className="mb-6" data-section>
               <div className="mb-2 flex items-center gap-2">
-                <h2 className="text-sm font-extrabold uppercase tracking-widest" style={{ color: PRIMARY }}>
+                <h2 className="text-sm font-extrabold uppercase tracking-widest" style={{ color: 'var(--theme-primary-color)' }}>
                   {section.title}
                 </h2>
                 <div className="h-0.5 flex-1" style={{ borderTop: `2px dashed ${ACCENT}40` }} />
@@ -96,7 +96,7 @@ function ArtisticSectionContent({ section, resume }: { section: any; resume: Res
           <div key={item.id} className="relative rounded-lg p-4" style={{ border: `1px dashed ${ACCENT}30` }}>
             <div className="absolute -left-1.5 top-4 h-3 w-3 rounded-full" style={{ backgroundColor: ACCENT }} />
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.position}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.position}</h3>
               <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold text-white" style={{ backgroundColor: ACCENT }}>
                 {item.startDate} - {item.endDate || (item.current ? (resume.language === 'zh' ? '至今' : 'Present') : '')}
               </span>
@@ -135,7 +135,7 @@ function ArtisticSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="rounded-lg p-4" style={{ border: `1px dashed ${ACCENT}30` }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.institution}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.institution}</h3>
               <span className="text-xs text-zinc-400">{item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}</span>
             </div>
             <p className="text-sm text-zinc-600">{degreeField(item.degree, item.field)}{item.location ? ` — ${item.location}` : ''}</p>
@@ -188,7 +188,7 @@ function ArtisticSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="rounded-lg p-4" style={{ border: `1px dashed ${ACCENT}30` }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="text-xs text-zinc-400">
                   {item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}
@@ -275,7 +275,7 @@ function ArtisticSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="rounded-lg p-4" style={{ border: `1px dashed ${ACCENT}30` }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.title}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="text-xs text-zinc-400">{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm" style={{ color: ACCENT }}>{item.subtitle}</p>}

@@ -94,7 +94,7 @@ export function buildElegantHtml(resume: ResumeWithSections): string {
     ${sections.map(s => `<div class="mb-6" data-section>
       <div class="mb-3 flex items-center gap-3">
         <div class="h-px flex-1" style="background:${GOLD}"></div>
-        <h2 class="shrink-0 text-sm font-bold uppercase tracking-[0.2em]" style="color:${GOLD}">${esc(s.title)}</h2>
+        <h2 class="shrink-0 text-sm font-bold uppercase tracking-[0.2em]" style="color:var(--theme-primary-color)">${esc(s.title)}</h2>
         <div class="h-px flex-1" style="background:${GOLD}"></div>
       </div>
       ${buildElegantSectionContent(s, resume.language || 'en')}

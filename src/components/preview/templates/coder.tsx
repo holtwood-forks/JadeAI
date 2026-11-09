@@ -58,7 +58,7 @@ export function CoderTemplate({ resume }: { resume: Resume }) {
               wrapperClassName="mx-auto mb-3 w-fit overflow-hidden"
             />
           )}
-          <h1 className="text-lg font-bold" style={{ color: GREEN }}>{pi.fullName || 'Your Name'}</h1>
+          <h1 className="text-lg font-bold" style={{ color: 'var(--theme-primary-safe-on-dark)' }}>{pi.fullName || 'Your Name'}</h1>
           {pi.jobTitle && (
             <p className="mt-0.5 text-xs" style={{ color: BLUE }}>
               {'// '}{pi.jobTitle}
@@ -163,7 +163,7 @@ export function CoderTemplate({ resume }: { resume: Resume }) {
         {/* Sidebar sections */}
         {sidebarSections.map((section) => (
           <div key={section.id} className="mb-5" data-section style={{ borderTop: `1px solid ${BORDER}`, paddingTop: '12px' }}>
-            <h2 className="mb-2 text-[10px] font-bold uppercase tracking-wider" style={{ color: BLUE }}>
+            <h2 className="mb-2 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--theme-accent-safe-on-dark)' }}>
               {'> '}{section.title}
             </h2>
             <CoderSidebarContent section={section} />
@@ -354,7 +354,7 @@ function CoderMainContent({ section, resume }: { section: any; resume: Resume })
         {items.map((item: any) => (
           <div key={item.id}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: BLUE }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-accent-safe-on-dark)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="text-xs text-zinc-400">
                   {item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}
@@ -394,7 +394,7 @@ function CoderMainContent({ section, resume }: { section: any; resume: Resume })
         {items.map((item: any) => (
           <div key={item.id}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: BLUE }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-accent-safe-on-dark)' }}>{item.name}</h3>
               <span className="text-xs text-zinc-400">{'\u2B50'} {item.stars?.toLocaleString()}</span>
             </div>
             {item.language && (

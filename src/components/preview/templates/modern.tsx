@@ -60,7 +60,7 @@ export function ModernTemplate({ resume }: { resume: Resume }) {
       <div className="p-8 pt-6">
         {sections.map((section) => (
             <div key={section.id} className="mb-6" data-section>
-              <h2 className="mb-3 flex items-center gap-2.5 text-sm font-bold uppercase tracking-wider" style={{ color: '#e94560' }}>
+              <h2 className="mb-3 flex items-center gap-2.5 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
                 <span className="h-[3px] w-7 rounded-full" style={{ background: 'linear-gradient(90deg, #e94560, #0f3460)' }} />
                 {section.title}
               </h2>

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:22-bookworm-slim AS base
+FROM node:24-bookworm-slim AS base
 ARG DEBIAN_MIRROR=http://mirrors.ustc.edu.cn/debian
 ARG DEBIAN_SECURITY_MIRROR=http://mirrors.ustc.edu.cn/debian-security
 ARG HTTP_PROXY
@@ -115,6 +115,7 @@ COPY . .
 # Use in-memory SQLite here to avoid file-lock contention during image build.
 ENV DB_TYPE=sqlite \
     SQLITE_PATH=:memory:
+ENV NEXT_OUTPUT=standalone
 RUN pnpm build
 
 # --- Production ---

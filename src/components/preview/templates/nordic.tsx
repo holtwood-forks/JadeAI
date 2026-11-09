@@ -26,7 +26,7 @@ export function NordicTemplate({ resume }: { resume: Resume }) {
             style={{ border: `2px solid ${SLATE_400}` }}
           />
         )}
-        <h1 className="text-2xl font-light tracking-wide" style={{ color: SLATE_500 }}>{pi.fullName || 'Your Name'}</h1>
+        <h1 className="text-2xl font-light tracking-wide" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
         {pi.jobTitle && <p className="mt-1 text-sm font-light tracking-wider" style={{ color: SLATE_400 }}>{pi.jobTitle}</p>}
         <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs" style={{ color: SLATE_400 }}>
           {pi.age && <span>{pi.age}</span>}
@@ -53,7 +53,7 @@ export function NordicTemplate({ resume }: { resume: Resume }) {
         .filter((s) => s.visible && s.type !== 'personal_info' && !isSectionEmpty(s))
         .map((section) => (
           <div key={section.id} className="mb-7" data-section>
-            <h2 className="mb-3 text-xs font-medium uppercase tracking-[0.2em]" style={{ color: SLATE_500 }}>
+            <h2 className="mb-3 text-xs font-medium uppercase tracking-[0.2em]" style={{ color: 'var(--theme-primary-color)' }}>
               {section.title}
             </h2>
             <NordicSectionContent section={section} resume={resume} />

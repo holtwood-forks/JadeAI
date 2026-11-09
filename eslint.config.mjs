@@ -32,6 +32,14 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
+  // Test fixtures intentionally poke malformed shapes through public APIs;
+  // `any` there documents "arbitrary input", not a missing type.
+  {
+    files: ["**/*.test.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

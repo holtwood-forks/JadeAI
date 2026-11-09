@@ -296,8 +296,8 @@ export function ThemeEditor() {
   const { currentResume } = useResumeStore();
 
   const themeConfig: ThemeConfig = useMemo(
-    () => mergeThemeConfig(currentResume?.themeConfig),
-    [currentResume?.themeConfig]
+    () => mergeThemeConfig(currentResume?.themeConfig, currentResume?.template),
+    [currentResume?.themeConfig, currentResume?.template]
   );
 
   // The stored fontFamily is the expanded stack (e.g. `Inter, "Noto Sans SC",
@@ -322,14 +322,17 @@ export function ThemeEditor() {
   const updateTheme = useCallback(
     (updates: Partial<ThemeConfig>) => {
       if (!currentResume) return;
-      const themeConfig = mergeThemeConfig({
-        ...currentResume.themeConfig,
-        ...updates,
-        margin: {
-          ...currentResume.themeConfig?.margin,
-          ...updates.margin,
+      const themeConfig = mergeThemeConfig(
+        {
+          ...currentResume.themeConfig,
+          ...updates,
+          margin: {
+            ...currentResume.themeConfig?.margin,
+            ...updates.margin,
+          },
         },
-      });
+        currentResume.template
+      );
       void commitResumeChange((draft) => ({
         ...draft,
         themeConfig,

@@ -45,7 +45,7 @@ function buildCreativeSectionContent(section: Section, lang: string): string {
   }
   if (section.type === 'projects') {
     return `<div class="grid grid-cols-1 gap-3 sm:grid-cols-2">${((c as ProjectsContent).items || []).map((it: any) => `<div class="rounded-lg border border-zinc-100 p-4">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${PRIMARY}">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs text-zinc-400">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-color)">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs text-zinc-400">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
       ${it.description ? `<div class="mt-1 text-sm text-zinc-600">${md(it.description)}</div>` : ''}
       ${it.technologies?.length ? `<div class="mt-2 flex flex-wrap gap-1">${it.technologies.map((t: string) => `<span class="rounded-full px-2 py-0.5 text-[10px] font-medium text-white" style="background:${GRADIENT}">${esc(t)}</span>`).join('')}</div>` : ''}
       ${it.highlights?.length ? `<ul class="mt-1.5 space-y-0.5">${buildHighlights(it.highlights, '', 'custom-dot')}</ul>` : ''}
@@ -70,7 +70,7 @@ function buildCreativeSectionContent(section: Section, lang: string): string {
   }
   if (section.type === 'custom') {
     return `<div class="space-y-3">${((c as CustomContent).items || []).map((it: any) => `<div class="rounded-lg border border-zinc-100 p-4">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${PRIMARY}">${esc(it.title)}</h3>${it.date ? `<span class="text-xs text-zinc-400">${esc(it.date)}</span>` : ''}</div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-color)">${esc(it.title)}</h3>${it.date ? `<span class="text-xs text-zinc-400">${esc(it.date)}</span>` : ''}</div>
       ${it.subtitle ? `<p class="text-sm text-zinc-500">${esc(it.subtitle)}</p>` : ''}
       ${it.description ? `<div class="mt-1 text-sm text-zinc-600">${md(it.description)}</div>` : ''}
     </div>`).join('')}</div>`;
@@ -88,7 +88,6 @@ export function buildCreativeHtml(resume: ResumeWithSections): string {
   const lang = resume.language || 'en';
   const contacts = [pi.age, pi.politicalStatus, pi.gender, pi.ethnicity, pi.hometown, pi.maritalStatus, pi.yearsOfExperience, pi.educationLevel, pi.email, pi.phone, pi.wechat, pi.location, pi.website].filter(Boolean);
   const GRADIENT = 'linear-gradient(135deg,#7c3aed 0%,#f97316 100%)';
-  const PRIMARY = '#7c3aed';
 
   return `<div class="mx-auto max-w-[210mm] overflow-hidden bg-white shadow-lg" style="font-family:Inter,sans-serif">
     <div class="relative px-8 py-10 text-white" style="background:${GRADIENT}">
@@ -106,7 +105,7 @@ export function buildCreativeHtml(resume: ResumeWithSections): string {
     </div>
     <div class="p-8">
       ${sections.map(s => `<div class="mb-6" data-section>
-        <div class="mb-3 flex items-center gap-3"><div class="h-8 w-1 rounded-full" style="background:${GRADIENT}"></div><h2 class="text-base font-extrabold uppercase tracking-wide" style="color:${PRIMARY}">${esc(s.title)}</h2></div>
+        <div class="mb-3 flex items-center gap-3"><div class="h-8 w-1 rounded-full" style="background:${GRADIENT}"></div><h2 class="text-base font-extrabold uppercase tracking-wide" style="color:var(--theme-primary-color)">${esc(s.title)}</h2></div>
         ${buildCreativeSectionContent(s, lang)}
       </div>`).join('')}
     </div>

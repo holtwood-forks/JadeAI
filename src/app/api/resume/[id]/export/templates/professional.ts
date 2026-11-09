@@ -85,7 +85,7 @@ export function buildProfessionalHtml(resume: ResumeWithSections): string {
       <div class="flex items-center justify-center gap-4">
         ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="shrink-0 rounded-full border-2 object-cover" style="height:4.5rem;width:4.5rem;border-color:${BLUE}"/>` : ''}
         <div>
-          <h1 class="text-3xl font-bold tracking-wide" style="color:${BLUE}">${esc(pi.fullName || 'Your Name')}</h1>
+          <h1 class="text-3xl font-bold tracking-wide" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
           ${pi.jobTitle ? `<p class="mt-1 text-base font-light tracking-wider text-zinc-500 uppercase">${esc(pi.jobTitle)}</p>` : ''}
         </div>
       </div>
@@ -93,7 +93,7 @@ export function buildProfessionalHtml(resume: ResumeWithSections): string {
       <div class="mt-4 h-[2px] w-full" style="background:linear-gradient(90deg,transparent 0%,${BLUE} 20%,${BLUE} 80%,transparent 100%)"></div>
     </div>
     ${sections.map(s => `<div class="mb-5" data-section>
-      <div class="mb-3 flex items-center gap-3"><h2 class="text-sm font-bold uppercase tracking-[0.2em]" style="color:${BLUE}">${esc(s.title)}</h2><div class="h-[1px] flex-1 bg-zinc-200"></div></div>
+      <div class="mb-3 flex items-center gap-3"><h2 class="text-sm font-bold uppercase tracking-[0.2em]" style="color:var(--theme-primary-color)">${esc(s.title)}</h2><div class="h-[1px] flex-1 bg-zinc-200"></div></div>
       ${buildProfessionalSectionContent(s, resume.language || 'en')}
     </div>`).join('')}
   </div>`;

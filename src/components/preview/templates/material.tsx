@@ -67,7 +67,7 @@ export function MaterialTemplate({ resume }: { resume: Resume }) {
           .map((section) => (
             <div key={section.id} className="mb-4" data-section>
               <div className="mb-3 rounded-xl bg-white p-5 shadow-sm">
-                <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider" style={{ color: PRIMARY }}>
+                <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
                   <span className="inline-block h-5 w-1 rounded-full" style={{ backgroundColor: VIOLET }} />
                   {section.title}
                 </h2>
@@ -180,7 +180,7 @@ function MaterialSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="rounded-lg bg-zinc-50 p-4">
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{item.name}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="text-xs text-zinc-400">
                   {item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}
@@ -264,7 +264,7 @@ function MaterialSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="rounded-lg bg-zinc-50 p-4">
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: PRIMARY }}>{item.title}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="text-xs text-zinc-400">{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm text-zinc-500">{item.subtitle}</p>}

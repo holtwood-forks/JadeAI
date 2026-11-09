@@ -138,7 +138,7 @@ export function buildTwoColumnHtml(resume: ResumeWithSections): string {
     </div>
     <div class="flex-1 p-6">
       ${rightSections.map(s => `<div class="mb-5" data-section>
-        <h2 class="mb-2 border-b-2 pb-1 text-sm font-bold uppercase tracking-wider" style="color:#1a1a2e;border-color:#1a1a2e">${esc(s.title)}</h2>
+        <h2 class="mb-2 border-b-2 pb-1 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color);border-color:var(--theme-primary-color)">${esc(s.title)}</h2>
         ${buildTwoColumnRightContent(s, lang)}
       </div>`).join('')}
     </div>

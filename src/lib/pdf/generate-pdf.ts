@@ -65,6 +65,11 @@ async function launchBundledChromium(signal?: AbortSignal) {
   });
 }
 
+// WSL: PATH entries may be bash wrappers that exec the Windows chrome.exe
+// (e.g. ~/.local/bin/chromium → /mnt/c/.../chrome.exe). accessSync passes, and
+// verified working: Puppeteer drives the Windows binary through WSL interop
+// (repeated exports succeed in <1s). If a launch ever hangs until the 15s
+// timeout, CHROME_PATH pointing at a Linux-native binary is the escape hatch.
 const PATH_CHROME_BINARIES = [
   'chromium',
   'chromium-browser',

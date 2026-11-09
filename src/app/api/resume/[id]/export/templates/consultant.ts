@@ -101,14 +101,14 @@ export function buildConsultantHtml(resume: ResumeWithSections): string {
       <div class="flex items-center gap-4">
         ${pi.avatar ? `<img src="${esc(pi.avatar)}" alt="" class="h-16 w-16 shrink-0 rounded-full object-cover" style="border:2px solid ${BLUE_600}"/>` : ''}
         <div>
-          <h1 class="text-2xl font-bold" style="color:${GRAY_700}">${esc(pi.fullName || 'Your Name')}</h1>
+          <h1 class="text-2xl font-bold" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
           ${pi.jobTitle ? `<p class="mt-0.5 text-sm font-medium" style="color:${BLUE_600}">${esc(pi.jobTitle)}</p>` : ''}
         </div>
       </div>
       ${contacts.length || pi.linkedin || pi.github ? `<div class="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-500">${contacts.map(ct => `<span>${esc(ct)}</span>`).join('')}${pi.linkedin ? `<span class="break-all">${esc(pi.linkedin)}</span>` : ''}${pi.github ? `<span class="break-all">${esc(pi.github)}</span>` : ''}</div>` : ''}
     </div>
     ${sections.map(s => `<div class="mb-6" data-section>
-      <h2 class="mb-3 border-l-[3px] pl-3 text-sm font-bold uppercase tracking-wider" style="color:${GRAY_700};border-color:${BLUE_600}">${esc(s.title)}</h2>
+      <h2 class="mb-3 border-l-[3px] pl-3 text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color);border-color:${BLUE_600}">${esc(s.title)}</h2>
       ${buildConsultantSectionContent(s, resume.language || 'en')}
     </div>`).join('')}
   </div>`;

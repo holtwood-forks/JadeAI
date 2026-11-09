@@ -56,7 +56,7 @@ export function FinanceTemplate({ resume }: { resume: Resume }) {
           .filter((s) => s.visible && s.type !== 'personal_info' && !isSectionEmpty(s))
           .map((section) => (
             <div key={section.id} className="mb-6" data-section>
-              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider" style={{ color: SLATE_800 }}>
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
                 {section.title}
               </h2>
               {/* Double-line border */}

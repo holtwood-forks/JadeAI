@@ -200,6 +200,5 @@ export function buildExportThemeCSS(theme: ThemeConfig, template: string): strin
     template,
     theme,
     includeNeedsPadding: true,
-    templateSafeVariables: true,
   });
 }

@@ -27,7 +27,7 @@ function buildWatercolorSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'work_experience') {
     return `<div class="space-y-4">${((c as WorkExperienceContent).items || []).map((it: any) => `<div class="rounded-xl p-4" style="background-color:${WASH}">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${PRIMARY}">${esc(it.position)}</h3><span class="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold text-white" style="background:${GRADIENT}">${esc(it.startDate)} - ${esc(it.endDate) || (it.current ? (lang === 'zh' ? '至今' : 'Present') : '')}</span></div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-color)">${esc(it.position)}</h3><span class="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold text-white" style="background:${GRADIENT}">${esc(it.startDate)} - ${esc(it.endDate) || (it.current ? (lang === 'zh' ? '至今' : 'Present') : '')}</span></div>
       ${it.company ? `<p class="text-sm font-medium" style="color:${ACCENT}">${esc(it.company)}</p>` : ''}
       ${it.description ? `<div class="mt-1 text-sm" style="color:${TEXT}">${md(it.description)}</div>` : ''}
       ${it.technologies?.length ? `<div class="mt-2 flex flex-wrap gap-1">${it.technologies.map((t: string) => `<span class="rounded-full px-2 py-0.5 text-[10px] font-medium text-white" style="background:${GRADIENT}">${esc(t)}</span>`).join('')}</div>` : ''}
@@ -37,7 +37,7 @@ function buildWatercolorSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'education') {
     return `<div class="space-y-3">${((c as EducationContent).items || []).map((it: any) => `<div class="rounded-xl p-4" style="background-color:${WASH}">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${PRIMARY}">${esc(it.institution)}</h3><span class="text-xs" style="color:${TEXT}">${esc(it.startDate)} - ${esc(it.endDate) || (lang === 'zh' ? '至今' : 'Present')}</span></div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-color)">${esc(it.institution)}</h3><span class="text-xs" style="color:${TEXT}">${esc(it.startDate)} - ${esc(it.endDate) || (lang === 'zh' ? '至今' : 'Present')}</span></div>
       <p class="text-sm" style="color:${TEXT_DARK}">${esc(degreeField(it.degree, it.field))}</p>
       ${it.gpa ? `<p class="text-xs" style="color:${ACCENT}">GPA: ${esc(it.gpa)}</p>` : ''}
       ${it.highlights?.length ? `<ul class="mt-1 space-y-0.5">${it.highlights.filter(Boolean).map((h: string) => `<li class="flex items-start gap-2 text-sm" style="color:${TEXT}"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style="background-color:${ACCENT}"></span>${md(h)}</li>`).join('')}</ul>` : ''}
@@ -55,7 +55,7 @@ function buildWatercolorSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'projects') {
     return `<div class="space-y-3">${((c as ProjectsContent).items || []).map((it: any) => `<div class="rounded-xl p-4" style="background-color:${WASH}">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${PRIMARY}">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs" style="color:${TEXT}">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-color)">${esc(it.name)}</h3>${it.startDate ? `<span class="text-xs" style="color:${TEXT}">${esc(it.startDate)} - ${it.endDate ? esc(it.endDate) : (lang === 'zh' ? '至今' : 'Present')}</span>` : ''}</div>
       ${it.description ? `<div class="mt-0.5 text-sm" style="color:${TEXT}">${md(it.description)}</div>` : ''}
       ${it.technologies?.length ? `<div class="mt-2 flex flex-wrap gap-1">${it.technologies.map((t: string) => `<span class="rounded-full px-2 py-0.5 text-[10px] font-medium text-white" style="background:${GRADIENT}">${esc(t)}</span>`).join('')}</div>` : ''}
       ${it.highlights?.length ? `<ul class="mt-1.5 space-y-0.5">${it.highlights.filter(Boolean).map((h: string) => `<li class="flex items-start gap-2 text-sm" style="color:${TEXT}"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style="background-color:${ACCENT}"></span>${md(h)}</li>`).join('')}</ul>` : ''}
@@ -84,7 +84,7 @@ function buildWatercolorSectionContent(section: Section, lang: string): string {
 
   if (section.type === 'custom') {
     return `<div class="space-y-3">${((c as CustomContent).items || []).map((it: any) => `<div class="rounded-xl p-4" style="background-color:${WASH}">
-      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:${PRIMARY}">${esc(it.title)}</h3>${it.date ? `<span class="text-xs" style="color:${TEXT}">${esc(it.date)}</span>` : ''}</div>
+      <div class="flex items-baseline justify-between"><h3 class="text-sm font-bold" style="color:var(--theme-primary-color)">${esc(it.title)}</h3>${it.date ? `<span class="text-xs" style="color:${TEXT}">${esc(it.date)}</span>` : ''}</div>
       ${it.subtitle ? `<p class="text-sm" style="color:${ACCENT}">${esc(it.subtitle)}</p>` : ''}
       ${it.description ? `<div class="mt-1 text-sm" style="color:${TEXT}">${md(it.description)}</div>` : ''}
     </div>`).join('')}</div>`;
@@ -109,14 +109,14 @@ export function buildWatercolorHtml(resume: ResumeWithSections): string {
       <div class="flex items-center gap-5">
         ${pi.avatar ? `<div class="shrink-0 rounded-full p-1" style="background:${GRADIENT}"><img src="${esc(pi.avatar)}" alt="" class="h-20 w-20 rounded-full border-2 border-white object-cover"/></div>` : ''}
         <div>
-          <h1 class="text-3xl font-bold" style="color:${PRIMARY}">${esc(pi.fullName || 'Your Name')}</h1>
+          <h1 class="text-3xl font-bold" style="color:var(--theme-primary-color)">${esc(pi.fullName || 'Your Name')}</h1>
           ${pi.jobTitle ? `<p class="mt-1 text-sm font-medium" style="color:${ACCENT}">${esc(pi.jobTitle)}</p>` : ''}
           ${contacts.length ? `<div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs" style="color:${TEXT}">${contacts.map((c, i) => `<span class="flex items-center gap-1.5">${esc(c)}${i < contacts.length - 1 ? `<span style="color:${ACCENT}">/</span>` : ''}</span>`).join('')}</div>` : ''}
         </div>
       </div>
     </div>
     ${sections.map(s => `<div class="mb-5" data-section>
-      <div class="mb-2 flex items-center gap-2"><div class="h-6 w-1.5 rounded-full" style="background:linear-gradient(to bottom,${ACCENT},${PRIMARY})"></div><h2 class="text-sm font-bold uppercase tracking-wider" style="color:${PRIMARY}">${esc(s.title)}</h2></div>
+      <div class="mb-2 flex items-center gap-2"><div class="h-6 w-1.5 rounded-full" style="background:linear-gradient(to bottom,${ACCENT},${PRIMARY})"></div><h2 class="text-sm font-bold uppercase tracking-wider" style="color:var(--theme-primary-color)">${esc(s.title)}</h2></div>
       ${buildWatercolorSectionContent(s, resume.language || 'en')}
     </div>`).join('')}
   </div>`;

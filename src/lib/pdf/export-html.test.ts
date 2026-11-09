@@ -32,8 +32,8 @@ const REQUIRED_PDF_PAGINATION_SNIPPETS = [
 const HTML_REGRESSION_CASES: HtmlRegressionCase[] = [
   {
     fixtureName: 'modern-long-content',
-    expectedLength: 57484,
-    expectedSha256: '7f2507d9301837941e820b122d3c2561127f9e249949db20ee84f2c3be75dd42',
+    expectedLength: 57987,
+    expectedSha256: '9d5f1b9a9c9ae227c5dbf3d6b30d1fd3d163efd747c23d023cef0e4b2b008bcd',
     dataAttributes: {
       'data-page-mode': 'edge-to-edge',
       'data-surface-mode': 'background',
@@ -51,8 +51,8 @@ const HTML_REGRESSION_CASES: HtmlRegressionCase[] = [
   },
   {
     fixtureName: 'sidebar-long-content',
-    expectedLength: 64681,
-    expectedSha256: 'ebc1199a04af6b14bdc8b63bc6f88a9566cf56bce4dadccb2a3725b8fd3e9f6a',
+    expectedLength: 65199,
+    expectedSha256: '002aa5553a0df6172f000ca44308ef2b5559a369e3fe3c73c182e471eb67cb24',
     dataAttributes: {
       'data-page-mode': 'edge-to-edge',
       'data-surface-mode': 'sidebar-dark',
@@ -70,8 +70,8 @@ const HTML_REGRESSION_CASES: HtmlRegressionCase[] = [
   },
   {
     fixtureName: 'compact-dense',
-    expectedLength: 57542,
-    expectedSha256: '0d560f14d0957d8992d96c1706520e5fdfa1e7dd2110c4bbd8ca7b24de11c074',
+    expectedLength: 57912,
+    expectedSha256: 'cff92d2ccc51a688170a357bfb806f1996b604057219938617a44fd8e5bdc8ea',
     dataAttributes: {
       'data-page-mode': 'edge-to-edge',
       'data-surface-mode': 'background',
@@ -85,8 +85,8 @@ const HTML_REGRESSION_CASES: HtmlRegressionCase[] = [
   },
   {
     fixtureName: 'neon-dark-background',
-    expectedLength: 63117,
-    expectedSha256: 'a00f0cb1b115a8b7c1d4d4ea51b6b743d01e2061fea0155e4e459c5ad4b758d8',
+    expectedLength: 64442,
+    expectedSha256: '47cf9f06ca0ac60838c761605746da804ec6a3041c16b8bffa57b173cb399bc2',
     dataAttributes: {
       'data-page-mode': 'edge-to-edge',
       'data-surface-mode': 'full-dark',
@@ -104,8 +104,8 @@ const HTML_REGRESSION_CASES: HtmlRegressionCase[] = [
   },
   {
     fixtureName: 'swiss-page-gap',
-    expectedLength: 63828,
-    expectedSha256: '9ebb89992158f37ad050ebefe3f7e93041712eba813d2a1c759ddac69bc1db43',
+    expectedLength: 64483,
+    expectedSha256: '86d6422c325fe7b39f1720ac4077d616bdb462b81f044dcb739fcdfd31d6d81f',
     dataAttributes: {
       'data-page-mode': 'standard',
       'data-surface-mode': 'light',
@@ -122,8 +122,8 @@ const HTML_REGRESSION_CASES: HtmlRegressionCase[] = [
   },
   {
     fixtureName: 'gradient-page-margin',
-    expectedLength: 65862,
-    expectedSha256: 'ab80f715c3c882382603baa5b6c934e0f9db3db42dc3d063f673632a00b5e560',
+    expectedLength: 66422,
+    expectedSha256: '37f63510bdb80c9e8c83cbe537d9cf655e585c94b4aefdead7ae90cb832c6c82',
     dataAttributes: {
       'data-page-mode': 'edge-to-edge',
       'data-surface-mode': 'background',

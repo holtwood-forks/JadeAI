@@ -26,7 +26,7 @@ export function ScientistTemplate({ resume }: { resume: Resume }) {
         {pi.avatar && (
           <AvatarImage src={pi.avatar} avatarStyle={resume.themeConfig?.avatarStyle} size={56} className="mx-auto mb-3" style={{ border: `2px solid ${ACCENT}` }} />
         )}
-        <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>
           {pi.fullName || 'Your Name'}
         </h1>
         {pi.jobTitle && (
@@ -59,7 +59,7 @@ export function ScientistTemplate({ resume }: { resume: Resume }) {
         <div key={section.id} className="mb-6" data-section>
           <div className="mb-2 flex items-baseline gap-2">
             <span className="text-sm font-bold" style={{ color: ACCENT }}>{idx + 1}.</span>
-            <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: PRIMARY }}>
+            <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
               {section.title}
             </h2>
           </div>

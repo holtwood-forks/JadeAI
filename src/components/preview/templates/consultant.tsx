@@ -30,7 +30,7 @@ export function ConsultantTemplate({ resume }: { resume: Resume }) {
             />
           )}
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: GRAY_700 }}>{pi.fullName || 'Your Name'}</h1>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
             {pi.jobTitle && <p className="mt-0.5 text-sm font-medium" style={{ color: BLUE_600 }}>{pi.jobTitle}</p>}
           </div>
         </div>
@@ -58,7 +58,7 @@ export function ConsultantTemplate({ resume }: { resume: Resume }) {
         .filter((s) => s.visible && s.type !== 'personal_info' && !isSectionEmpty(s))
         .map((section) => (
           <div key={section.id} className="mb-6" data-section>
-            <h2 className="mb-3 border-l-[3px] pl-3 text-sm font-bold uppercase tracking-wider" style={{ color: GRAY_700, borderColor: BLUE_600 }}>
+            <h2 className="mb-3 border-l-[3px] pl-3 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)', borderColor: BLUE_600 }}>
               {section.title}
             </h2>
             <ConsultantSectionContent section={section} resume={resume} />

@@ -6,6 +6,24 @@ JadeAI 是一个 AI 驱动的简历与求职工作台（Next.js / React / TypeSc
 
 ## [Unreleased]
 
+### 修复
+
+- 简历接口：create/update 校验模板名合法性，无效值返回 400，不再静默存库后按 classic 渲染。
+
+### 变更
+
+- 工具链：CI 与 Docker 镜像的 Node 版本对齐至 24（与本地一致，消除「本地过 CI 挂」的版本偏差）。
+- 工具链：`next.config` 的 standalone 输出改为仅 Docker 构建启用（`NEXT_OUTPUT=standalone`），本地 `next start` 不再输出不兼容警告。
+- 工具链：ESLint 对测试文件降级 `no-explicit-any`（测试 fixture 的 `any` 表达「任意输入」语义），警告数 161→124。
+
+### 新增
+
+- 防回归网：主题覆盖回归测试（字面色标题模板集合不得超出文档化保留清单，有意保留需同步测试与矩阵文档）；首屏 JS 预算断言接入 CI（模板库 ≤1150KB / 编辑器 ≤2100KB / 落地页 ≤1100KB）。
+- PDF 冒烟扩面：50 套模板逐套真实渲染 A4 PDF 并断言合法性、页数上限与哨兵文本可提取（此前仅 ~7 套有真实浏览器验证）。
+- 性能：AI 悬浮球引入链（AI SDK + zod + react-markdown 栈，约 630KB）改为按需加载，编辑器页首屏 JS 1870→1240 KB（-34%）；点击悬浮球时才拉取对话所需 chunk。
+
+## [v0.8.0] - 2026-10-25
+
 ### 新增
 
 - PDF 导出新增「连续长页」排版：按内容实际高度生成单页 PDF（上限 18000px），保留 A4 与智能一页选项；导出对话框、预览页与中英文案同步更新。
@@ -40,6 +58,8 @@ JadeAI 是一个 AI 驱动的简历与求职工作台（Next.js / React / TypeSc
 - 构建链（tsconfig/eslint）排除 gitignored 的 AI 工具目录（`.agents/`、`agent/`、`data/`），本地全量校验不再被这些目录的脚本打断。
 - 同步上游 217 个提交，并入面试官侧招聘模块与 Electron 桌面客户端；随后移除桌面客户端，重新聚焦 Docker Web 部署。
 - README 本土化为纯中文，移除英文版与废弃的 zh-CN README，并补充 OrcaRouter 等 AI 提供商配置说明；整理仓库忽略规则，停止追踪 AI 工具产物。
+- 文档：补充 WSL 开发说明——`~/.local/bin` 中转发到 Windows `chrome.exe` 的包装脚本经实测可用于 PDF 导出（经 WSL interop 驱动）；若浏览器启动阶段挂起，再设置 `CHROME_PATH` 指向 Linux 原生浏览器。
+- 文档：新增主题色覆盖矩阵审计（`scripts/audit-theme-coverage.ts` 可再生成）：当前 40/50 模板存在字面色标题、不跟随用户主题色（首批已迁移 3 套），为主题一致性改造提供量化基线；修正 AGENTS.md 对不存在的 `docs/ARCHITECTURE.md` 的引用。
 
 ### 安全
 
@@ -72,6 +92,15 @@ JadeAI 是一个 AI 驱动的简历与求职工作台（Next.js / React / TypeSc
 - 数据库：SQLite 迁移遇到 `already exists` 时校验迁移账本是否推进到最新条目，否则拒绝以残缺 schema 启动；示例数据填充失败不再让 `dbReady` 永久 reject。
 - 迁移：recruit 迁移改为幂等 DDL，兼容「上游血统」「merge 后已有表」「全新库」三种升级路径；PostgreSQL 外键迁移时间戳与幂等性修正。
 - 保存：修复并发保存被 `isSaving` 早退丢弃、`flushSave` 提前放行、卸载时在飞请求失去串行化；AI 对话与重试统一走 `flushSave`。
+- 技能板块：自动保存不再清除正在编辑的空白技能行（skills 数组中的空字符串条目），修复新增技能行在保存后消失的问题。
+- 模板导出：`TEMPLATE_BUILDERS` 与 `TEMPLATES` 建立编译期一一对应，新增模板漏配导出实现会在类型检查与测试中失败，不再静默回退 classic 样式；新增 50 套模板导出 HTML 全量回归（姓名、summary 末行、二维码分节哨兵断言）。
+- 主题色：elegant / modern / professional 的标题改走 `var(--theme-primary-color)`，用户设置的主色首次对这三套模板生效；未设置时通过按模板默认色表 `TEMPLATE_PRIMARY_DEFAULTS` 保持原有外观（金 / 红 / 藏青），主题编辑器的任意改动也不会再把全局默认色误烘焙进这三套模板。
+- 主题色（第二批）：creative、designer、startup、formal、euro、clean、material、retro、gradient、watercolor、rose、architect、legal 十三套全量迁移，teacher（仅姓名）、luxe（仅分节标题）部分迁移；未设置主题色时外观不变。药丸式标题（teacher/medical）与深色背景模板（neon 等）因对比度风险暂缓，见 `docs/research/theme-color-coverage.md`。
+- 主题色（第三批）：executive、timeline、nordic、corporate、consultant、finance、metro、blocks、magazine、artistic、swiss、berlin、scientist、engineer、card、zigzag 十六套中性深色标题模板全量迁移；至此 50 套中 39 套标题跟随主题色（31 套迁移 + 8 套原生跟随），按模板默认色表收录 34 条。发现 japanese 存在预览与导出的色板漂移（分节标题两侧颜色不同），暂缓迁移待对齐，详见矩阵文档。
+- 主题色（第四批·契约扩展收官）：激活 `--theme-accent-color` 按模板默认色（coder/sidebar/developer）；新增深色面 `safe-on-dark` 变体（过暗主色自动提亮至可读）与 `alpha` 透明度变体（辉光/渐变线跟随主色）。迁移 two-column、sidebar、coder、developer、neon（含标题辉光）、japanese（先按导出侧对齐预览的色板与字号漂移——该漂移为上游固有）。mosaic（循环色板）与 teacher/medical（药丸标题）定为设计性不迁。50 套中 43 套标题跟随主题色，其余 7 套均为文档化决策，见 `docs/research/theme-color-coverage.md`。
+- 主题色（第五批·药丸标题）：注入 `--theme-contrast-text` 填充面文字色（按亮度自动黑/白），teacher/medical 的药丸式分节标题背景与文字接入主题且默认外观不变，浅色主色下自动切深字。同时清理 buildThemeCss 遗留死分支（约 40 行无调用方的 CSS 生成路径）并合并重复的亮度计算。矩阵收敛至 6 套设计性保留。
+- 性能：50 套预览模板改为按需 chunk（`next/dynamic`，SSR 保留），编辑器/分享/落地页首屏 JS 下降 19–34%（编辑器 2310→1870 KB、模板库 1410→947 KB、落地页 1373→911 KB）；模板库页 50 张卡片改可视区懒挂载（提前 400px 预载），不再一次性下载全部模板代码。新增首屏测量脚本 `scripts/measure-first-load-js.ts`。
+- CI：升级 Node 20 弃用警告点名的三个 action（checkout v7 / setup-node v7 / pnpm/action-setup v6，后者正式支持仓库在用的 pnpm 11）。
 - 数据完整性：板块内容校验失败时只丢弃非法条目并保留其余条目，不再整段清空；匿名会话 cookie 与 `x-fingerprint` 不一致时以签名 cookie 为准，不再永久 401。
 - 字体：导出 HTML/PDF 内嵌 Inter 可变字体；DOCX 不再写入终端未安装的内置字体，回退 Microsoft YaHei；衬线/等宽字体栈把通用族放在内置中文字体之前，避免 PDF 中 Georgia/Courier 被替换。
 - 主题：读取时解码旧版 JSON 字符串/字符键 themeConfig；颜色输入框支持逐字输入 6 位色值。

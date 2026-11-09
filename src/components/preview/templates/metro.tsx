@@ -40,7 +40,7 @@ export function MetroTemplate({ resume }: { resume: Resume }) {
           />
         )}
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-extrabold uppercase tracking-tight" style={{ color: PRIMARY }}>{pi.fullName || 'Your Name'}</h1>
+          <h1 className="text-2xl font-extrabold uppercase tracking-tight" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
           {pi.jobTitle && (
             <p className="mt-0.5 text-sm font-semibold" style={{ color: AMBER }}>{pi.jobTitle}</p>
           )}
@@ -104,7 +104,7 @@ function MetroSectionContent({ section, resume }: { section: any; resume: Resume
         {items.map((item: any) => (
           <div key={item.id} className="border-l-3 pl-4" style={{ borderColor: AMBER }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.position}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.position}</h3>
               <span className="shrink-0 px-2 py-0.5 text-[10px] font-bold uppercase text-white" style={{ backgroundColor: PRIMARY }}>
                 {item.startDate} - {item.endDate || (item.current ? (resume.language === 'zh' ? '至今' : 'Present') : '')}
               </span>
@@ -140,7 +140,7 @@ function MetroSectionContent({ section, resume }: { section: any; resume: Resume
         {items.map((item: any) => (
           <div key={item.id} className="border-l-3 pl-4" style={{ borderColor: AMBER }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.institution}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.institution}</h3>
               <span className="text-xs text-zinc-400">{item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}</span>
             </div>
             <p className="text-sm text-zinc-600">{degreeField(item.degree, item.field)}</p>
@@ -189,7 +189,7 @@ function MetroSectionContent({ section, resume }: { section: any; resume: Resume
         {items.map((item: any) => (
           <div key={item.id} className="border-l-3 pl-4" style={{ borderColor: AMBER }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="text-xs text-zinc-400">
                   {item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}
@@ -272,7 +272,7 @@ function MetroSectionContent({ section, resume }: { section: any; resume: Resume
         {items.map((item: any) => (
           <div key={item.id} className="border-l-3 pl-4" style={{ borderColor: AMBER }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.title}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="text-xs text-zinc-400">{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm text-zinc-500">{item.subtitle}</p>}

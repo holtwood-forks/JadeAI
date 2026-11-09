@@ -36,7 +36,7 @@ export function MagazineTemplate({ resume }: { resume: Resume }) {
             <AvatarImage src={pi.avatar} avatarStyle={resume.themeConfig?.avatarStyle} size={80} className="shrink-0" />
           )}
           <div>
-            <h1 className="text-4xl font-black uppercase tracking-tight" style={{ color: PRIMARY, letterSpacing: '-0.02em' }}>
+            <h1 className="text-4xl font-black uppercase tracking-tight" style={{ color: 'var(--theme-primary-color)', letterSpacing: '-0.02em' }}>
               {pi.fullName || 'Your Name'}
             </h1>
             {pi.jobTitle && (
@@ -65,7 +65,7 @@ export function MagazineTemplate({ resume }: { resume: Resume }) {
           <div key={section.id} className="mb-5" data-section>
             <div className="mb-2 flex items-center gap-2">
               <div className="h-4 w-4 shrink-0" style={{ backgroundColor: ACCENT }} />
-              <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: PRIMARY }}>
+              <h2 className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--theme-primary-color)' }}>
                 {section.title}
               </h2>
               <div className="h-px flex-1" style={{ backgroundColor: '#e5e5e5' }} />
@@ -102,7 +102,7 @@ function MagazineSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="border-l-2 pl-4" style={{ borderColor: ACCENT }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.position}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.position}</h3>
               <span className="shrink-0 text-xs font-medium" style={{ color: ACCENT }}>
                 {item.startDate} - {item.endDate || (item.current ? (resume.language === 'zh' ? '至今' : 'Present') : '')}
               </span>
@@ -137,7 +137,7 @@ function MagazineSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="border-l-2 pl-4" style={{ borderColor: ACCENT }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.institution}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.institution}</h3>
               <span className="text-xs" style={{ color: SECONDARY }}>{item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}</span>
             </div>
             <p className="text-sm" style={{ color: SECONDARY }}>{degreeField(item.degree, item.field)}{item.location ? ` — ${item.location}` : ''}</p>
@@ -179,7 +179,7 @@ function MagazineSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="border-l-2 pl-4" style={{ borderColor: ACCENT }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.name}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="text-xs" style={{ color: SECONDARY }}>
                   {item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}
@@ -262,7 +262,7 @@ function MagazineSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="border-l-2 pl-4" style={{ borderColor: ACCENT }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-bold" style={{ color: PRIMARY }}>{item.title}</h3>
+              <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="text-xs" style={{ color: SECONDARY }}>{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm italic" style={{ color: SECONDARY }}>{item.subtitle}</p>}

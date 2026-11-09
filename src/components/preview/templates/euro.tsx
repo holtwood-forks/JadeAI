@@ -16,7 +16,7 @@ export function EuroTemplate({ resume }: { resume: Resume }) {
       {/* Header - EU CV style with photo on right */}
       <div className="mb-6 flex items-start gap-6">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold" style={{ color: BLUE }}>{pi.fullName || 'Your Name'}</h1>
+          <h1 className="text-3xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
           {pi.jobTitle && <p className="mt-1 text-base text-zinc-500">{pi.jobTitle}</p>}
           <div className="mt-3 space-y-0.5 text-sm text-zinc-600">
             {pi.age && <div><span className="inline-block w-20 text-xs font-semibold uppercase text-zinc-400">Age</span>{pi.age}</div>}
@@ -50,7 +50,7 @@ export function EuroTemplate({ resume }: { resume: Resume }) {
           .map((section) => (
             <div key={section.id} className="mb-5 flex gap-4" data-section>
               <div className="w-28 shrink-0 pt-0.5 text-right">
-                <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: BLUE }}>{section.title}</h2>
+                <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>{section.title}</h2>
               </div>
               <div className="flex-1 border-l-2 pl-4" style={{ borderColor: '#dbeafe' }}>
                 <EuroSectionContent section={section} resume={resume} />

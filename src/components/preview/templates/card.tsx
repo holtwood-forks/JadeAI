@@ -40,7 +40,7 @@ export function CardTemplate({ resume }: { resume: Resume }) {
             style={{ border: `3px solid ${ACCENT}` }}
           />
         )}
-        <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>{pi.fullName || 'Your Name'}</h1>
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
         {pi.jobTitle && <p className="mt-1 text-sm font-medium" style={{ color: ACCENT }}>{pi.jobTitle}</p>}
         {(contacts.length > 0 || pi.linkedin || pi.github) && (
           <div className="mt-2 flex flex-wrap items-center justify-center gap-3 text-xs text-zinc-500">
@@ -61,7 +61,7 @@ export function CardTemplate({ resume }: { resume: Resume }) {
             <div className="rounded-lg p-4 shadow-sm" style={{ backgroundColor: CARD_BG, border: '1px solid #e4e4e7' }}>
               <div className="mb-3 flex items-center gap-2">
                 <div className="h-5 w-1 rounded-full" style={{ backgroundColor: ACCENT }} />
-                <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: PRIMARY }}>
+                <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
                   {section.title}
                 </h2>
               </div>

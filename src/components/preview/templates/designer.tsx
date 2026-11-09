@@ -47,7 +47,7 @@ export function DesignerTemplate({ resume }: { resume: Resume }) {
           .filter((s) => s.visible && s.type !== 'personal_info' && !isSectionEmpty(s))
           .map((section) => (
             <div key={section.id} className="mb-6" data-section>
-              <h2 className="mb-3 text-xs font-black uppercase tracking-[0.3em]" style={{ color: CORAL }}>
+              <h2 className="mb-3 text-xs font-black uppercase tracking-[0.3em]" style={{ color: 'var(--theme-primary-color)' }}>
                 {section.title}
               </h2>
               <DesignerSectionContent section={section} resume={resume} />

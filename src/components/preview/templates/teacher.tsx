@@ -23,7 +23,7 @@ export function TeacherTemplate({ resume }: { resume: Resume }) {
           <AvatarImage src={pi.avatar} size={72} avatarStyle={resume.themeConfig?.avatarStyle} className="shrink-0" style={{ border: `3px solid ${ACCENT}` }} />
         )}
         <div className="flex-1">
-          <h1 className="text-2xl font-bold" style={{ color: PRIMARY }}>
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>
             {pi.fullName || 'Your Name'}
           </h1>
           {pi.jobTitle && (
@@ -60,8 +60,8 @@ export function TeacherTemplate({ resume }: { resume: Resume }) {
         .map((section) => (
           <div key={section.id} className="mb-6" data-section>
             <h2
-              className="mb-3 inline-block rounded-full px-4 py-1 text-xs font-bold uppercase tracking-wider text-white"
-              style={{ backgroundColor: PRIMARY }}
+              className="mb-3 inline-block rounded-full px-4 py-1 text-xs font-bold uppercase tracking-wider"
+              style={{ backgroundColor: 'var(--theme-primary-color)', color: 'var(--theme-primary-contrast-text)' }}
             >
               {section.title}
             </h2>

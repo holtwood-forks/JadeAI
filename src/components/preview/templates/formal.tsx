@@ -20,7 +20,7 @@ export function FormalTemplate({ resume }: { resume: Resume }) {
             <AvatarImage src={pi.avatar} avatarStyle={resume.themeConfig?.avatarStyle} size={64} className="shrink-0" style={{ border: `2px solid ${DARK_GREEN}` }} />
           )}
           <div className="text-center">
-            <h1 className="text-2xl font-bold" style={{ color: DARK_GREEN }}>{pi.fullName || 'Your Name'}</h1>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--theme-primary-color)' }}>{pi.fullName || 'Your Name'}</h1>
             {pi.jobTitle && <p className="mt-0.5 text-base text-zinc-500">{pi.jobTitle}</p>}
           </div>
         </div>
@@ -49,7 +49,7 @@ export function FormalTemplate({ resume }: { resume: Resume }) {
         .map((section) => (
           <div key={section.id} className="mb-5" data-section>
             <div className="mb-2 flex items-center gap-2">
-              <h2 className="shrink-0 text-sm font-bold uppercase tracking-wider" style={{ color: DARK_GREEN }}>{section.title}</h2>
+              <h2 className="shrink-0 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>{section.title}</h2>
               <div className="h-px flex-1 bg-zinc-200" />
             </div>
             <FormalSectionContent section={section} resume={resume} />

@@ -79,7 +79,7 @@ export function GradientTemplate({ resume }: { resume: Resume }) {
           .filter((s) => s.visible && s.type !== 'personal_info' && !isSectionEmpty(s))
           .map((section) => (
             <div key={section.id} className="mb-6" data-section>
-              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider" style={{ color: ACCENT }}>
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--theme-primary-color)' }}>
                 <span className="inline-block pb-1 border-b-2" style={{ borderImage: GRADIENT, borderImageSlice: 1 }}>
                   {section.title}
                 </span>
@@ -192,7 +192,7 @@ function GradientSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="border-l-2 pl-4" style={{ borderImage: GRADIENT, borderImageSlice: 1 }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: ACCENT }}>{item.name}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.name}</h3>
               {item.startDate && (
                 <span className="text-xs text-zinc-400">
                   {item.startDate} - {item.endDate || (resume.language === 'zh' ? '至今' : 'Present')}
@@ -275,7 +275,7 @@ function GradientSectionContent({ section, resume }: { section: any; resume: Res
         {items.map((item: any) => (
           <div key={item.id} className="border-l-2 pl-4" style={{ borderImage: GRADIENT, borderImageSlice: 1 }}>
             <div className="flex items-baseline justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: ACCENT }}>{item.title}</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--theme-primary-color)' }}>{item.title}</h3>
               {item.date && <span className="text-xs text-zinc-400">{item.date}</span>}
             </div>
             {item.subtitle && <p className="text-sm text-zinc-500">{item.subtitle}</p>}
