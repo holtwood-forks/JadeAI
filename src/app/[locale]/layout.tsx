@@ -20,7 +20,7 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   const authEnabled = process.env.AUTH_ENABLED === 'true';
-  const githubRepo = process.env.PUBLIC_GITHUB_REPO || 'holtwood-projects/JadeAI';
+  const githubRepo = process.env.PUBLIC_GITHUB_REPO || 'holtwood-forks/JadeAI';
   const siteUrl = (process.env.PUBLIC_SITE_URL || 'https://lessup.github.io/JadeAI').replace(/\/$/, '');
   const serverAIConfig = getPublicServerAIConfig();
   const singleUser = resolveSingleUserMode(process.env);

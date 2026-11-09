@@ -19,7 +19,7 @@ interface RuntimeConfig {
 }
 
 
-const DEFAULT_GITHUB_REPO = 'holtwood-projects/JadeAI';
+const DEFAULT_GITHUB_REPO = 'holtwood-forks/JadeAI';
 const DEFAULT_SITE_URL = 'https://lessup.github.io/JadeAI';
 
 const RuntimeConfigContext = createContext<RuntimeConfig>({

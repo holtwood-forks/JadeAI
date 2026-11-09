@@ -18,8 +18,19 @@ JadeAI 是一个 AI 驱动的简历与求职工作台（Next.js / React / TypeSc
 - 新增 `pnpm db:backup`：使用 SQLite 在线备份生成一致性快照，默认保留 14 份。
 - PDF 导出复用共享 Chromium 实例，空闲 10 分钟自动回收并在进程退出时清理；A4/连续长页与并发闸门不变。
 - 简历预览模板改为按需加载，landing 首屏 JS 从 1371.7 KB 降至 912.8 KB。
+- 新增 `/api/ready`：校验数据库连接与 `AUTH_SECRET`，供 Docker HEALTHCHECK 与编排使用；`/api/health` 仍为纯存活探针。
+- 新增 `pnpm start:standalone`：直接运行 `node .next/standalone/server.js`，README 补充 standalone 部署说明。
+- 新增 `docker-compose.yml` 个人自用模板与 `docs/deployment.md` 部署指南（架构、配置矩阵、备份恢复、升级回滚、排障）。
+- PDF 资源占用可配置：`PDF_MAX_CONCURRENT`（默认 2，范围 1–4）与 `PDF_BROWSER_IDLE_MS`（默认 10 分钟），便于 1 GB 主机降低峰值。
+- `/fonts/*` 增加一周缓存头（此前每次访问都要重新校验 70 MB 字体）；关闭 `X-Powered-By`；`/api/health` 与 `/api/ready` 返回 `no-store`。
+- `docker:run` 增加容器日志轮转（10 MB × 3），避免长期运行写满磁盘。
 
 ### 变更
+
+- 依赖升级：`next` 16.1.6 → 16.4.5、`next-auth` 5.0.0-beta.30 → beta.32、`puppeteer-core` 24 → 25；`pnpm audit --prod` 从 8 critical / 38 high 降为 **0 已知漏洞**（传递依赖通过 `pnpm-workspace.yaml` 的 overrides 收敛）。
+- 修复 Turbopack 对 `PATH` 查找 Chromium 的全量追踪告警，standalone 产物从约 199 MB 降到约 76 MB。
+- 编辑器页把 AI 聊天面板（zod + AI SDK）与 7 个弹窗改为按需加载：首屏 JS 从约 1721 KB（506 KB gzip）降到约 1177 KB（356 KB gzip），降幅约 30%，弹窗关闭动画与聊天会话状态保持不变。
+- 升级 `eslint-config-next` 后新增的 React Compiler 规则（`set-state-in-effect`、`refs`、`immutability`、`preserve-manual-memoization`）暂时显式关闭：现有弹窗/聊天面板依赖 effect 内重置状态，逐个重构属于独立任务，不应混在依赖升级里。
 
 - 匿名模式下 AI 与简历相关接口的限流改为按客户端地址分桶，不再信任可伪造的 `x-fingerprint`；反向代理部署需设置 `TRUST_PROXY=true` 才能按真实 IP 分桶。
 - AI 模型切换改为每次发送时读取最新选择，不再受会话 transport 缓存影响。
@@ -30,7 +41,25 @@ JadeAI 是一个 AI 驱动的简历与求职工作台（Next.js / React / TypeSc
 - 同步上游 217 个提交，并入面试官侧招聘模块与 Electron 桌面客户端；随后移除桌面客户端，重新聚焦 Docker Web 部署。
 - README 本土化为纯中文，移除英文版与废弃的 zh-CN README，并补充 OrcaRouter 等 AI 提供商配置说明；整理仓库忽略规则，停止追踪 AI 工具产物。
 
+### 安全
+
+- 修复 `AUTH_ENABLED=true` 与 `JADE_SINGLE_USER=true`（或 `JADE_RUNTIME=desktop`）同时设置时的鉴权绕过：此前单用户分支优先，所有接口在无会话时以 `local` 用户返回 200；现在启动即报错退出，请求路径同样失败关闭。
+- 公开分享接口不再下发 `visible: false` 的板块：隐藏内容此前虽不在页面上渲染，但可从 `/api/share/<token>` 的 JSON 直接读取。
+- 简历列表与详情接口不再返回 `shareToken` 与 `sharePassword` 哈希；分享路由改用独立的 `findByIdWithShareFields` 读取。
+- 简历写入接口限制 JSON 请求体为 2 MiB（超限返回 413），并限制标题长度与板块数量。
+- 分享链接只在 `TRUST_PROXY=true` 时信任 `X-Forwarded-Host` / `X-Forwarded-Proto`；否则使用 `PUBLIC_SITE_URL` 或请求自身 origin，避免伪造链接。
+- 分享接口的密码不再接受 `GET ?password=`：查询串会进入访问日志与 APM；密码只走 POST。
+- 分享创建/修改、用户资料与设置接口统一限制 JSON 请求体大小（8–64 KiB），密码与标签长度设上限。
+- `docker:run` 默认只绑定 `127.0.0.1`（可用 `BIND_ADDR=0.0.0.0` 覆盖），避免无登录模式直接暴露到局域网/公网。
+
 ### 修复
+
+- `.env.example` 不再默认把 `PUBLIC_SITE_URL` 指向 GitHub Pages：本地部署生成的分享链接此前会错误地指向线上站点。
+- `docker:run` 启动后等待 `/api/ready`，失败时打印容器日志；`docker:publish` 不再默认推送到上游作者的镜像命名空间，必须显式设置 `IMAGE_REPOSITORY`。
+- 发布检查脚本的临时目录清理改为不依赖 `rm -rf`，在受限 shell 中也能跑完。
+- 分享页请求改为 `cache: 'no-store'`，关闭分享或修改密码后不会继续展示浏览器缓存的旧内容。
+- 修复用户设置被写坏：`users.settings` 的默认值此前是字符串 `'{}'`，写入后变成双重编码的 `'"{}"'`，合并设置时把字符串拆成字符下标，产生 `{"0":"{","1":"}"}` 脏数据。默认值改为对象，并对历史数据做兼容解析与清理。
+- 启动时若 `AUTH_SECRET` 缺失或仍是示例占位值，会打印明确告警。
 
 - 构建：移除 `next/font/google` 的构建期网络依赖，改用本地 Inter 字体并补齐 sans/mono 回退栈；离线或受限网络下的 Docker 构建不再访问 `fonts.gstatic.com`。
 - Docker：`docker:smoke` 支持 `DOCKER_BUILD_NETWORK=host`，便于 WSL/受限网络下构建；默认 bridge 行为不变。

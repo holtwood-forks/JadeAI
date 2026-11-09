@@ -13,7 +13,8 @@ pnpm test
 pnpm build
 
 SQLITE_SMOKE_DIR="$(mktemp -d)"
-trap 'rm -rf "$SQLITE_SMOKE_DIR"' EXIT
+# Portable cleanup: some sandboxes reject `rm -rf` even on a mktemp dir.
+trap 'find "$SQLITE_SMOKE_DIR" -depth -delete 2>/dev/null || true' EXIT
 
 SQLITE_PATH="$SQLITE_SMOKE_DIR/jade.db" node --import tsx - <<'NODE'
 const sqliteModule = await import('./src/lib/db/adapters/sqlite.ts');

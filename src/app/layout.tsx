@@ -3,7 +3,7 @@ import './globals.css';
 import { getEmbeddedFontFacesCss } from '@/lib/font-stacks';
 
 const appName = process.env.APP_NAME || 'JadeAI';
-const siteUrl = (process.env.PUBLIC_SITE_URL || 'https://lessup.github.io/JadeAI').replace(/\/$/, '');
+const siteUrl = (process.env.PUBLIC_SITE_URL || 'https://holtwood-forks.github.io/JadeAI').replace(/\/$/, '');
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
