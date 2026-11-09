@@ -8,6 +8,16 @@ const eslintConfig = defineConfig([
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "warn",
+      // New in eslint-config-next 16.4 (React Compiler rules). The existing
+      // dialogs/chat panels intentionally reset state from effects, and two
+      // components keep a "latest value" ref during render to avoid stale
+      // closures. Adopting these rules is a separate refactor with real
+      // behavioural risk; keep them off so a dependency bump cannot silently
+      // change app behaviour.
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/immutability": "off",
+      "react-hooks/preserve-manual-memoization": "off",
     },
   },
   {

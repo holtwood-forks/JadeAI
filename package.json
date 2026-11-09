@@ -3,13 +3,13 @@
   "version": "0.7.0",
   "private": true,
   "packageManager": "pnpm@11.0.9",
-  "homepage": "https://holtwood-projects.github.io/JadeAI/",
+  "homepage": "https://holtwood-forks.github.io/JadeAI/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/holtwood-projects/JadeAI.git"
+    "url": "git+https://github.com/holtwood-forks/JadeAI.git"
   },
   "bugs": {
-    "url": "https://github.com/holtwood-projects/JadeAI/issues"
+    "url": "https://github.com/holtwood-forks/JadeAI/issues"
   },
   "scripts": {
     "dev": "next dev --turbopack",
@@ -22,6 +22,7 @@
     "docker:publish": "bash ./docker_publish.sh",
     "release:check": "bash ./scripts/verify-release.sh",
     "start": "next start",
+    "start:standalone": "node .next/standalone/server.js",
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -32,15 +33,6 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/lib/db/seed.ts",
     "db:backup": "tsx scripts/backup-db.ts"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@swc/core",
-      "sharp",
-      "unrs-resolver",
-      "esbuild",
-      "@parcel/watcher"
-    ]
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.50",
@@ -61,12 +53,12 @@
     "jsonrepair": "^3.13.2",
     "lucide-react": "^0.563.0",
     "mupdf": "^1.27.0",
-    "next": "16.1.6",
-    "next-auth": "5.0.0-beta.30",
+    "next": "16.4.5",
+    "next-auth": "5.0.0-beta.32",
     "next-intl": "^4.14.9",
     "next-themes": "^0.4.6",
     "postgres": "^3.4.8",
-    "puppeteer-core": "^24.37.2",
+    "puppeteer-core": "^25.16.0",
     "qrcode": "^1.5.4",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
@@ -91,7 +83,7 @@
     "drizzle-kit": "^0.31.9",
     "esbuild": "^0.28.2",
     "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.4.5",
     "shadcn": "^3.8.4",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
