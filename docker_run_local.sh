@@ -11,6 +11,10 @@ IMAGE_NAME="${IMAGE_NAME:-${IMAGE_REPOSITORY}:${IMAGE_TAG}}"
 LATEST_IMAGE="${IMAGE_REPOSITORY}:latest"
 CONTAINER_NAME="${CONTAINER_NAME:-jadeai}"
 HOST_PORT="${HOST_PORT:-3003}"
+# Bind to loopback by default: the app is unauthenticated in single-user and
+# fingerprint modes, so publishing on 0.0.0.0 exposes it to the whole network.
+# Set BIND_ADDR=0.0.0.0 only when a firewall/reverse proxy protects the port.
+BIND_ADDR="${BIND_ADDR:-127.0.0.1}"
 ENV_FILE="${ENV_FILE:-${SCRIPT_DIR}/.env.local}"
 DATA_DIR="${DATA_DIR:-}"
 VOLUME_NAME="${VOLUME_NAME:-jadeai-data}"
@@ -111,12 +115,32 @@ docker run -d \
   --init \
   --name "$CONTAINER_NAME" \
   --restart unless-stopped \
+  --log-opt max-size=10m \
+  --log-opt max-file=3 \
   --env-file "$ENV_FILE" \
-  -p "${HOST_PORT}:3000" \
+  -p "${BIND_ADDR}:${HOST_PORT}:3000" \
   "${volume_args[@]}" \
   "$IMAGE_NAME"
 
-echo "Started $CONTAINER_NAME from $IMAGE_NAME on http://localhost:${HOST_PORT}"
+DISPLAY_HOST="$BIND_ADDR"
+[ "$DISPLAY_HOST" = "0.0.0.0" ] && DISPLAY_HOST="localhost"
+echo "Started $CONTAINER_NAME from $IMAGE_NAME on http://${DISPLAY_HOST}:${HOST_PORT}"
+
+# Surface startup failures here instead of leaving a restarting container behind.
+ready=false
+for _ in $(seq 1 40); do
+  if docker exec "$CONTAINER_NAME" wget -qO- http://127.0.0.1:3000/api/ready >/dev/null 2>&1; then
+    ready=true
+    break
+  fi
+  sleep 1
+done
+if [ "$ready" != "true" ]; then
+  echo "Container did not become ready. Recent logs:" >&2
+  docker logs --tail 40 "$CONTAINER_NAME" >&2 || true
+  exit 1
+fi
+echo "Readiness check passed (/api/ready)"
 if [ -n "$DATA_DIR" ]; then
   echo "Using bind mount $DATA_DIR -> /app/data (ensure it is writable by container uid 1000 if you see SQLite permission errors)."
 else

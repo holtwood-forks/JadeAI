@@ -86,7 +86,7 @@ export class SQLiteAdapter implements DatabaseAdapter {
     // Desktop has exactly one user, created lazily by resolveUser() →
     // userRepository.ensureLocalUser(). Seeding a demo-fingerprint user here
     // would leave a second, unreachable user row in every install.
-    if (config.runtime.desktop) {
+    if (config.runtime.singleUser) {
       return;
     }
 

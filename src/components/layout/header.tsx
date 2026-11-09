@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useUIStore } from '@/stores/ui-store';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
+import { useRuntimeConfig } from '@/components/providers/runtime-config-provider';
 
 const NAV_ITEMS: { href: string; i18nKey: string; match: string; tourId?: string }[] = [
   { href: '/dashboard', i18nKey: 'dashboard.nav', match: '/dashboard' },
@@ -22,6 +23,10 @@ export function Header() {
   const { openModal } = useUIStore();
   const t = useTranslations();
   const pathname = usePathname();
+  const { recruitEnabled } = useRuntimeConfig();
+  const navItems = recruitEnabled
+    ? NAV_ITEMS
+    : NAV_ITEMS.filter((item) => item.href !== '/recruit');
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-background/95 dark:supports-[backdrop-filter]:bg-background/60">
@@ -31,7 +36,7 @@ export function Header() {
             <Image src="/logo.svg" alt="JadeAI" width={120} height={36} priority className="h-auto w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const isActive = pathname.startsWith(item.match);
               return (
                 <Link
@@ -76,7 +81,7 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="right" className="w-64">
                 <nav className="flex flex-col gap-2 pt-8">
-                  {NAV_ITEMS.map((item) => {
+                  {navItems.map((item) => {
                     const isActive = pathname.startsWith(item.match);
                     return (
                       <Link

@@ -5,7 +5,14 @@ import { MessageSquare, Minus, AlertTriangle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEditorStore } from '@/stores/editor-store';
 import { useSettingsStore } from '@/stores/settings-store';
-import { AIChatContent } from './ai-chat-panel';
+import dynamic from 'next/dynamic';
+
+// The chat panel pulls in zod and the AI SDK (~120 KB gzip). Keep them out of
+// the editor's initial bundle; the chunk loads the first time the chat opens.
+const AIChatContent = dynamic(() => import('./ai-chat-panel').then((m) => m.AIChatContent), {
+  ssr: false,
+  loading: () => <div className="h-full animate-pulse bg-zinc-50" />,
+});
 
 const WIN_W_DESKTOP = 440;
 const WIN_H_DESKTOP = 620;
@@ -52,6 +59,9 @@ function calcWindowPos(bubbleRight: number, bubbleBottom: number, winW: number, 
 export function AIChatBubble({ resumeId }: AIChatBubbleProps) {
   const t = useTranslations('ai');
   const { showAiChat, toggleAiChat } = useEditorStore();
+  // Mount on first open so the conversation survives collapsing, but skip the
+  // bundle entirely until the user asks for the chat.
+  const [chatMounted, setChatMounted] = useState(showAiChat);
   const hasApiKey = useSettingsStore((s) => !!s.aiApiKey);
 
   // Bubble position (draggable, right/bottom offsets)
@@ -68,6 +78,11 @@ export function AIChatBubble({ resumeId }: AIChatBubbleProps) {
 
   // Auto-calculated window position (recalculated when bubble moves and window hasn't been manually dragged)
   const [winSize, setWinSize] = useState(getWinSize);
+
+  useEffect(() => {
+    if (showAiChat) setChatMounted(true);
+  }, [showAiChat]);
+
   useEffect(() => {
     const onResize = () => setWinSize(getWinSize());
     window.addEventListener('resize', onResize);
@@ -77,7 +92,6 @@ export function AIChatBubble({ resumeId }: AIChatBubbleProps) {
   const autoWindowPos = useMemo(() => {
     if (typeof window === 'undefined') return { left: 100, top: 100 };
     return calcWindowPos(bubblePos.x, bubblePos.y, winSize.w, winSize.h);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bubblePos.x, bubblePos.y, winSize.w, winSize.h]);
 
   const winPos = windowPos ?? autoWindowPos;
@@ -183,7 +197,7 @@ export function AIChatBubble({ resumeId }: AIChatBubbleProps) {
 
         {/* Chat content */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          <AIChatContent resumeId={resumeId} hideTitle />
+          {chatMounted && <AIChatContent resumeId={resumeId} hideTitle />}
         </div>
       </div>
 

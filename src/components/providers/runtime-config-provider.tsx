@@ -14,11 +14,12 @@ interface RuntimeConfig {
   aiServerBaseURL: string;
   aiServerModel: string;
 
-  desktop: boolean;
+  singleUser: boolean;
+  recruitEnabled: boolean;
 }
 
 
-const DEFAULT_GITHUB_REPO = 'holtwood-projects/JadeAI';
+const DEFAULT_GITHUB_REPO = 'holtwood-forks/JadeAI';
 const DEFAULT_SITE_URL = 'https://lessup.github.io/JadeAI';
 
 const RuntimeConfigContext = createContext<RuntimeConfig>({
@@ -29,7 +30,8 @@ const RuntimeConfigContext = createContext<RuntimeConfig>({
   aiServerProvider: 'openai',
   aiServerBaseURL: 'https://api.openai.com/v1',
   aiServerModel: 'gpt-4o',
-  desktop: false,
+  singleUser: false,
+  recruitEnabled: true,
 });
 
 export function RuntimeConfigProvider({
@@ -43,7 +45,8 @@ export function RuntimeConfigProvider({
   aiServerBaseURL,
   aiServerModel,
 
-  desktop,
+  singleUser,
+  recruitEnabled,
 }: {
   children: React.ReactNode;
   authEnabled: boolean;
@@ -55,7 +58,8 @@ export function RuntimeConfigProvider({
   aiServerBaseURL: string;
   aiServerModel: string;
 
-  desktop: boolean;
+  singleUser: boolean;
+  recruitEnabled: boolean;
 }) {
   const setServerAIConfig = useSettingsStore((s) => s.setServerAIConfig);
 
@@ -79,7 +83,8 @@ export function RuntimeConfigProvider({
         aiServerProvider,
         aiServerBaseURL,
         aiServerModel,
-        desktop,
+        singleUser,
+        recruitEnabled,
       }}
     >
       {children}

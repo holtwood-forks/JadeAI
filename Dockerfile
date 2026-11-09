@@ -144,8 +144,8 @@ LABEL org.opencontainers.image.title="JadeAI" \
       org.opencontainers.image.version="${APP_VERSION}" \
       org.opencontainers.image.revision="${VCS_REF}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.source="https://github.com/holtwood-projects/JadeAI" \
-      org.opencontainers.image.url="https://github.com/holtwood-projects/JadeAI" \
+      org.opencontainers.image.source="https://github.com/holtwood-forks/JadeAI" \
+      org.opencontainers.image.url="https://github.com/holtwood-forks/JadeAI" \
       org.opencontainers.image.licenses="Apache-2.0"
 
 # Install Chromium, fonts, and tini for PDF export.
@@ -207,7 +207,7 @@ VOLUME /app/data
 
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD wget -qO- "http://127.0.0.1:${PORT}/" >/dev/null || exit 1
+  CMD wget -qO- "http://127.0.0.1:${PORT}/api/ready" >/dev/null || exit 1
 
 # tini as PID 1 reaps the orphans and forwards signals, so `docker stop` still
 # shuts the server down cleanly. Baked into the image rather than left to

@@ -6,6 +6,8 @@
  */
 export const dynamic = 'force-dynamic';
 
+const NO_STORE = { 'Cache-Control': 'no-store' };
+
 export function GET() {
-  return Response.json({ ok: true });
+  return Response.json({ ok: true }, { headers: NO_STORE });
 }

@@ -4,7 +4,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 APP_VERSION="$(node -e "console.log(require(process.argv[1]).version)" "$SCRIPT_DIR/package.json")"
-IMAGE_REPOSITORY="${IMAGE_REPOSITORY:-shuai0/jadeai}"
+IMAGE_REPOSITORY="${IMAGE_REPOSITORY:-}"
+if [ -z "$IMAGE_REPOSITORY" ]; then
+  echo "IMAGE_REPOSITORY is required, e.g. IMAGE_REPOSITORY=<your-dockerhub-user>/jadeai pnpm docker:publish"
+  echo "It must be a repository you can push to; the old default pointed at the upstream author's namespace."
+  exit 1
+fi
 PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
 PUSH="${PUSH:-true}"
 BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"

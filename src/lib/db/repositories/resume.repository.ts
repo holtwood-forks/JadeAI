@@ -63,36 +63,80 @@ function compactMetadata(metadata: ResumeDraftMetadata = {}) {
   return Object.fromEntries(Object.entries(metadata).filter(([, value]) => value !== undefined));
 }
 
-function findByIdInExecutor(executor: any, id: string) {
-  return chain(readAll(executor.select().from(resumes).where(eq(resumes.id, id)).limit(1)), (resume: any[]) => {
-    if (!resume[0]) return null;
-    return chain(
-      readAll(executor.select().from(resumeSections).where(eq(resumeSections.resumeId, id)).orderBy(resumeSections.sortOrder)),
-      (sections: any[]) => ({ ...resume[0], sections }),
-    );
-  });
+/**
+ * Columns safe to hand back to clients.
+ *
+ * `shareToken` and `sharePassword` are deliberately absent: a list/detail
+ * response is not a share dialog, and the password hash is offline-crackable
+ * material. Only the share routes opt in via `findByIdWithShareFields`.
+ */
+const resumeClientColumns = {
+  id: resumes.id,
+  userId: resumes.userId,
+  title: resumes.title,
+  template: resumes.template,
+  themeConfig: resumes.themeConfig,
+  isDefault: resumes.isDefault,
+  language: resumes.language,
+  isPublic: resumes.isPublic,
+  viewCount: resumes.viewCount,
+  createdAt: resumes.createdAt,
+  updatedAt: resumes.updatedAt,
+};
+
+const resumeShareColumns = {
+  ...resumeClientColumns,
+  shareToken: resumes.shareToken,
+  sharePassword: resumes.sharePassword,
+};
+
+function selectResumeRow(executor: any, includeShareFields: boolean) {
+  return executor
+    .select(includeShareFields ? resumeShareColumns : resumeClientColumns)
+    .from(resumes);
+}
+
+function withSections(executor: any, resume: any) {
+  return chain(
+    readAll(
+      executor
+        .select()
+        .from(resumeSections)
+        .where(eq(resumeSections.resumeId, resume.id))
+        .orderBy(resumeSections.sortOrder),
+    ),
+    (sections: any[]) => ({ ...resume, sections }),
+  );
+}
+
+function findByIdInExecutor(executor: any, id: string, includeShareFields = false) {
+  return chain(
+    readAll(selectResumeRow(executor, includeShareFields).where(eq(resumes.id, id)).limit(1)),
+    (resume: any[]) => (resume[0] ? withSections(executor, resume[0]) : null),
+  );
 }
 
 function findByIdForUserInExecutor(executor: any, id: string, userId: string) {
   return chain(
-    readAll(executor.select().from(resumes).where(and(eq(resumes.id, id), eq(resumes.userId, userId))).limit(1)),
-    (resume: any[]) => {
-      if (!resume[0]) return null;
-      return chain(
-        readAll(executor.select().from(resumeSections).where(eq(resumeSections.resumeId, id)).orderBy(resumeSections.sortOrder)),
-        (sections: any[]) => ({ ...resume[0], sections }),
-      );
-    },
+    readAll(selectResumeRow(executor, false).where(and(eq(resumes.id, id), eq(resumes.userId, userId))).limit(1)),
+    (resume: any[]) => (resume[0] ? withSections(executor, resume[0]) : null),
   );
 }
 
 export const resumeRepository = {
   async findAllByUserId(userId: string) {
-    return db.select().from(resumes).where(eq(resumes.userId, userId)).orderBy(desc(resumes.updatedAt));
+    return selectResumeRow(db, false)
+      .where(eq(resumes.userId, userId))
+      .orderBy(desc(resumes.updatedAt));
   },
 
   async findById(id: string) {
     return findByIdInExecutor(db, id);
+  },
+
+  /** Server-only: needed by the share routes to read/rotate the share secret. */
+  async findByIdWithShareFields(id: string) {
+    return findByIdInExecutor(db, id, true);
   },
 
   async findByIdForUser(id: string, userId: string) {

@@ -9,7 +9,7 @@ import { LOCAL_USER_ID } from '@/lib/auth/local-user';
 export function useFingerprint() {
   const [fingerprint, setFingerprint] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { authEnabled, desktop } = useRuntimeConfig();
+  const { authEnabled, singleUser } = useRuntimeConfig();
 
   useEffect(() => {
     if (authEnabled) {
@@ -17,9 +17,9 @@ export function useFingerprint() {
       return;
     }
 
-    // Desktop ignores the fingerprint server-side (resolveUser always returns
-    // the single local user), so computing one would burn CPU for nothing.
-    if (desktop) {
+    // Single-user mode ignores the fingerprint server-side (resolveUser always
+    // returns the single local user), so computing one would burn CPU for nothing.
+    if (singleUser) {
       setFingerprint(LOCAL_USER_ID);
       setIsLoading(false);
       return;
@@ -52,7 +52,7 @@ export function useFingerprint() {
     }
 
     getFingerprint();
-  }, [authEnabled, desktop]);
+  }, [authEnabled, singleUser]);
 
   return { fingerprint, isLoading };
 }

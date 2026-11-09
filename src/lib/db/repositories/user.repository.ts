@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../index';
+import { normalizeUserSettings } from '../settings-normalize';
 import { users, resumes } from '../schema';
 import { resumeRepository } from './resume.repository';
 import { createSampleResume } from '../sample-resume';
@@ -124,7 +125,7 @@ export const userRepository = {
 
   async getSettings(id: string) {
     const result = await db.select({ settings: users.settings }).from(users).where(eq(users.id, id)).limit(1);
-    return (result[0]?.settings || {}) as Record<string, unknown>;
+    return normalizeUserSettings(result[0]?.settings);
   },
 
   async updateSettings(id: string, settings: Record<string, unknown>) {

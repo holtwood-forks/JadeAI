@@ -7,7 +7,7 @@
 拖拽编辑、AI 优化、版本历史、模拟面试、多格式导出，一站式完成简历制作与求职准备。
 
 > **本项目是 fork** — 原始项目：[**LingyiChen-AI/JadeAI**](https://github.com/LingyiChen-AI/JadeAI)（原作者 Lingyi Chen 等）。
-> 本仓库由 [holtwood-projects](https://github.com/holtwood-projects) 组织维护，遵循上游 Apache-2.0 许可。
+> 本仓库由 [holtwood-forks](https://github.com/holtwood-forks) 组织维护，遵循上游 Apache-2.0 许可。
 > 本仓库**不发布构建产物**，应用下载与最新动态请前往 [上游 Releases](https://github.com/LingyiChen-AI/JadeAI/releases/latest)。
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -15,7 +15,7 @@
 [![React](https://img.shields.io/badge/React-19-61dafb)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)](https://www.typescriptlang.org/)
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-222?logo=githubpages)](https://holtwood-projects.github.io/JadeAI/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-222?logo=githubpages)](https://holtwood-forks.github.io/JadeAI/)
 
 
 [![Powered by OrcaRouter](https://img.shields.io/badge/Powered_by-OrcaRouter-2563eb)](https://www.orcarouter.ai/)
@@ -27,7 +27,7 @@
 
 ---
 
-> 仓库首页：https://holtwood-projects.github.io/JadeAI/  
+> 仓库首页：https://holtwood-forks.github.io/JadeAI/\
 > GitHub Pages 只承载项目主页与说明文档；完整应用需要服务端运行环境来支持 API、认证、数据库和导出能力。
 
 ## JadeAI 是什么
@@ -157,18 +157,30 @@ JadeAI 是一个面向简历编辑、AI 优化和求职准备的全栈应用。�
 
 ### Docker（推荐）
 
+> 完整部署设计、配置矩阵、备份恢复与排障见 **[docs/deployment.md](docs/deployment.md)**。
+
 ```bash
+mkdir -p data
 cp .env.example .env.local
 # 至少设置 AUTH_SECRET；如需容器内直接启用 AI，设置 OPENAI_API_KEY / ANTHROPIC_API_KEY / GOOGLE_GENERATIVE_AI_API_KEY
+docker compose up -d --build
+```
 
+也可以使用脚本（行为等价）：
+
+```bash
 pnpm docker:run
 ```
 
-默认会：
+两种方式默认都会：
 
-- 按 `package.json` 的版本号构建 `jadeai-local:v<version>` 与 `jadeai-local:latest`
-- 使用名为 `jadeai-data` 的 Docker volume 持久化 SQLite 数据
-- 在本机 `3003` 端口启动容器，访问 [http://localhost:3003](http://localhost:3003)
+- 构建 `jadeai-local:latest`（Compose）；脚本会额外打上 `package.json` 版本号 `v<version>`
+- 持久化 SQLite 数据（Compose 用 `./data`，脚本用 `jadeai-data` 命名卷）
+- **只监听 `127.0.0.1:3003`**，访问 [http://localhost:3003](http://localhost:3003)
+- 启动后等待 `/api/ready` 通过；失败时会打印容器日志而不是静默留下一个重启中的容器
+
+> 单用户与指纹模式下应用没有登录门槛。仅在确实需要在局域网/公网暴露时才设置
+> `BIND_ADDR=0.0.0.0`，并确保前面有防火墙或反向代理鉴权。
 
 如果你想只构建镜像，不启动容器：
 
@@ -182,7 +194,7 @@ pnpm docker:build
 pnpm docker:smoke
 ```
 
-该命令会构建镜像、使用临时 Docker volume 启动容器，并检查应用可访问、SQLite 数据库已创建、Chromium 可执行以及 `/api/ai/models` API 可达。它不会并入 `pnpm release:check`，因此不会拖慢常规发布检查。
+该命令会构建镜像、使用临时 Docker volume 启动容器，并检查 `/api/ready` 就绪、SQLite 数据库已创建、Chromium 可执行，以及 A4 与连续长页两种 PDF 导出成功。它不会并入 `pnpm release:check`，因此不会拖慢常规发布检查。
 
 > **AI 配置：** 无需服务端 AI 环境变量。每位用户在应用内的 **设置 > AI** 中自行配置 API Key、Base URL 和模型。还没有模型密钥的话，[OrcaRouter](https://www.orcarouter.ai/) 一个 Key 就能调用 200+ 模型，详见 [AI 模型配置](#ai-模型配置)。
 
@@ -269,19 +281,39 @@ pnpm version patch --no-git-tag-version
 
 pnpm release:check
 docker login
-IMAGE_REPOSITORY=shuai0/jadeai pnpm docker:publish
+IMAGE_REPOSITORY=<你的 Docker Hub 用户名>/jadeai pnpm docker:publish
 ```
 
 发布脚本默认使用 `docker buildx` 生成 `linux/amd64,linux/arm64` 多架构镜像；如需先本地演练，可执行：
 
 ```bash
-PUSH=false PLATFORMS=linux/amd64 IMAGE_REPOSITORY=shuai0/jadeai pnpm docker:publish
+PUSH=false PLATFORMS=linux/amd64 IMAGE_REPOSITORY=<你的 Docker Hub 用户名>/jadeai pnpm docker:publish
 ```
+
+### 数据备份与恢复
+
+SQLite 使用 WAL 模式，运行中直接复制 `jade.db` 可能得到不一致快照。请使用内置备份命令（SQLite online backup API）：
+
+```bash
+# 默认读取 ./data/jade.db，写入 ./data/backups，保留最近 14 份
+pnpm db:backup
+
+# 自定义路径与保留数量
+SQLITE_PATH=/path/to/jade.db BACKUP_DIR=/path/to/backups BACKUP_KEEP=30 pnpm db:backup
+```
+
+每条备份都会执行 `PRAGMA integrity_check`，失败时命令以非零退出。恢复步骤：
+
+1. 停止容器或进程；
+2. 把备份文件复制为 `jade.db`，并删除同目录的 `jade.db-wal`、`jade.db-shm`；
+3. 启动后核对简历数量，必要时运行 `PRAGMA integrity_check`。
+
+> 使用 Docker 命名卷时，建议改用 `DATA_DIR="$(pwd)/jadeai-data" pnpm docker:run`，让数据库落在宿主机目录，便于直接执行 `SQLITE_PATH=... pnpm db:backup`。PostgreSQL 请使用 `pg_dump -Fc`。
 
 ### 本地开发
 
 ```bash
-git clone https://github.com/holtwood-projects/JadeAI.git
+git clone https://github.com/holtwood-forks/JadeAI.git
 cd JadeAI
 
 pnpm install
@@ -317,6 +349,20 @@ pnpm dev
 DB_TYPE=postgresql
 DATABASE_URL=postgresql://user:pass@host:5432/jadeai
 ```
+
+#### 生产模式启动（standalone）
+
+standalone 产物只在 `NEXT_OUTPUT=standalone` 时生成（Dockerfile 已内置该变量），裸机构建需显式开启，`pnpm start`（即 `next start`）也不适用于 standalone 产物：
+
+```bash
+NEXT_OUTPUT=standalone pnpm build
+PORT=3000 HOSTNAME=0.0.0.0 node .next/standalone/server.js
+# 或
+pnpm build:standalone
+pnpm start:standalone
+```
+
+standalone 产物不会自动复制 `public/` 与 `.next/static/`，裸机部署时需自行复制，或直接使用仓库内置的 Docker 镜像。
 
 ## 部署视频
 
@@ -356,13 +402,21 @@ DATABASE_URL=postgresql://user:pass@host:5432/jadeai
 | `AUTH_SECRET` | 是 | — | 会话加密密钥 |
 | `SQLITE_PATH` | 否 | `./data/jade.db` | SQLite 数据库文件路径 |
 | `AUTH_ENABLED` | 否 | `false` | 启用 Google OAuth（`true`）或使用指纹模式（`false`） |
-| `JADE_RUNTIME` | 否 | — | 设为 `desktop` 时切换到单本地用户模式（跳过指纹与 NextAuth，数据库只有一个 id 为 `local` 的用户） |
+| `JADE_SINGLE_USER` | 否 | `false` | 设为 `true` 时切换到单本地用户模式（所有请求映射到 id 为 `local` 的用户，跳过指纹与 NextAuth）。仅建议本机/内网使用，公网需在前面加认证。**不可与 `AUTH_ENABLED=true` 同时设置**：两者冲突时服务会拒绝启动 |
+| `JADE_RUNTIME` | 否 | — | 历史别名；设为 `desktop` 时身份模式等同 `JADE_SINGLE_USER=true`，并额外强制 SQLite |
+| `FEATURE_RECRUIT` | 否 | `true` | 设为 `false` 时隐藏招聘入口并将 `/recruit` 重定向到 dashboard；路由与数据表保留 |
+| `JADE_HOME` | 否 | — | 设为 `dashboard` 时访问 `/` 直接进入工作台；默认展示落地页 |
 | `GOOGLE_CLIENT_ID` | OAuth 时 | — | Google OAuth 客户端 ID |
 | `GOOGLE_CLIENT_SECRET` | OAuth 时 | — | Google OAuth 客户端密钥 |
 | `APP_NAME` | 否 | `JadeAI` | 应用显示名称 |
 | `DEFAULT_LOCALE` | 否 | `zh` | 默认语言：`zh` 或 `en` |
+| `PUBLIC_SITE_URL` | 否 | — | 对外访问地址，用于生成分享链接与元数据；未设置时使用请求自身的 origin。本地/内网部署请留空 |
+| `PDF_MAX_CONCURRENT` | 否 | `2` | 每个进程允许的并发 PDF 导出数（1–4）；1 GB 主机建议设为 `1` |
+| `PDF_BROWSER_IDLE_MS` | 否 | `600000` | 共享 Chromium 空闲回收时间（毫秒）；调低可更早释放内存 |
 | `TRUST_PROXY` | 否 | `false` | 仅当所有请求都经过可信反向代理时设为 `true`，否则忽略 `X-Forwarded-For` 并按单一地址限流 |
 | `TRUST_PROXY_HOPS` | 否 | `1` | 可信代理层数；`TRUST_PROXY=true` 时从 `X-Forwarded-For` 右侧取第 N 个地址作为客户端 IP |
+
+> **健康检查：** `/api/health` 是纯存活探针（不访问数据库）；`/api/ready` 会校验数据库连接与 `AUTH_SECRET`，不可用时返回 503。Docker HEALTHCHECK 使用 `/api/ready`。
 
 > **匿名模式与限流：** `AUTH_ENABLED=false`（默认）时，`x-fingerprint` 是客户端可伪造的标识。为防止轮换指纹绕过限流，AI 与简历相关接口改为按客户端地址分桶；未设置 `TRUST_PROXY=true` 时，所有匿名请求共享同一个限流桶。多人部署建议启用 OAuth，或在反向代理后设置 `TRUST_PROXY=true`，让每个真实 IP 独立计数。
 
@@ -421,13 +475,15 @@ src/
 | 命令 | 说明 |
 |---|---|
 | `pnpm dev` | 启动开发服务器 |
-| `pnpm build` | 生产构建 |
+| `pnpm build` | 生产构建（不含 standalone 产物） |
+| `pnpm build:standalone` | 生成 standalone 产物，用于裸机/Docker |
 | `pnpm type-check` | TypeScript 类型检查 |
 | `pnpm lint` | ESLint 检查 |
 | `pnpm db:generate` | 生成 SQLite 迁移 |
 | `pnpm db:generate:pg` | 生成 PostgreSQL 迁移 |
 | `pnpm db:migrate` | 执行迁移 |
 | `pnpm db:seed` | 填充示例数据 |
+| `pnpm db:backup` | 创建 SQLite 一致性备份并清理旧备份 |
 
 ## 截图
 

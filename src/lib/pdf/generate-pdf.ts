@@ -3,6 +3,7 @@ import { delimiter, join } from 'node:path';
 import puppeteer, { type Browser, type Page } from 'puppeteer-core';
 
 import type { PdfLayout } from './layout';
+import { resolvePdfBrowserIdleMs } from './resource-policy';
 import {
   CONTINUOUS_WIDTH_MM,
   CONTINUOUS_WIDTH_PX,
@@ -99,7 +100,9 @@ export function resolveLocalChromeExecutable(
   for (const name of PATH_CHROME_BINARIES) {
     for (const dir of pathEnv.split(delimiter)) {
       if (!dir) continue;
-      const executablePath = join(dir, name);
+      // turbopackIgnore: this is a PATH lookup, not a project-relative read;
+      // without the hint Turbopack traces the whole project into the bundle.
+      const executablePath = join(/* turbopackIgnore: true */ dir, name);
       if (hasAccess(executablePath)) {
         return executablePath;
       }
@@ -202,7 +205,7 @@ async function getBrowser(signal?: AbortSignal) {
  */
 const KEEP_NAMES_SHIM = `window.__name = (f, n) => f;`;
 
-function patchPageForEvaluate(page: import('puppeteer-core').Page) {
+function patchPageForEvaluate(page: Page) {
   return page.evaluateOnNewDocument(KEEP_NAMES_SHIM);
 }
 
@@ -227,6 +230,91 @@ async function closePdfBrowser(browser: Browser): Promise<void> {
     // A hung renderer must not leave a Chromium process behind.
     browser.process()?.kill('SIGKILL');
   }
+}
+
+// Survive Next.js dev reloads: a module-local browser would leak a Chromium
+// process on every hot reload.
+const pdfBrowserState = globalThis as typeof globalThis & {
+  __jadePdfBrowser?: Browser;
+  __jadePdfBrowserLaunch?: Promise<Browser>;
+  __jadePdfIdleTimer?: ReturnType<typeof setTimeout>;
+  __jadePdfExitHooksInstalled?: boolean;
+};
+
+function clearIdleTimer(): void {
+  if (pdfBrowserState.__jadePdfIdleTimer) {
+    clearTimeout(pdfBrowserState.__jadePdfIdleTimer);
+    pdfBrowserState.__jadePdfIdleTimer = undefined;
+  }
+}
+
+function scheduleIdleClose(): void {
+  clearIdleTimer();
+  if (!pdfBrowserState.__jadePdfBrowser) return;
+  const timer = setTimeout(() => {
+    void closeSharedBrowser();
+  }, resolvePdfBrowserIdleMs());
+  timer.unref?.();
+  pdfBrowserState.__jadePdfIdleTimer = timer;
+}
+
+async function closeSharedBrowser(): Promise<void> {
+  clearIdleTimer();
+  const browser = pdfBrowserState.__jadePdfBrowser;
+  pdfBrowserState.__jadePdfBrowser = undefined;
+  pdfBrowserState.__jadePdfBrowserLaunch = undefined;
+  if (browser) {
+    await closePdfBrowser(browser);
+  }
+}
+
+function installPdfExitHooks(): void {
+  if (pdfBrowserState.__jadePdfExitHooksInstalled) return;
+  pdfBrowserState.__jadePdfExitHooksInstalled = true;
+  const shutdown = () => {
+    void closeSharedBrowser();
+  };
+  process.once('SIGTERM', shutdown);
+  process.once('SIGINT', shutdown);
+}
+
+async function getSharedBrowser(signal?: AbortSignal): Promise<Browser> {
+  signal?.throwIfAborted();
+
+  const existing = pdfBrowserState.__jadePdfBrowser;
+  if (existing?.connected) {
+    scheduleIdleClose();
+    return existing;
+  }
+  if (existing) {
+    pdfBrowserState.__jadePdfBrowser = undefined;
+  }
+
+  if (!pdfBrowserState.__jadePdfBrowserLaunch) {
+    const launch = launchPdfBrowser(signal)
+      .then((browser) => {
+        pdfBrowserState.__jadePdfBrowser = browser;
+        browser.on('disconnected', () => {
+          if (pdfBrowserState.__jadePdfBrowser === browser) {
+            pdfBrowserState.__jadePdfBrowser = undefined;
+            clearIdleTimer();
+          }
+        });
+        installPdfExitHooks();
+        scheduleIdleClose();
+        return browser;
+      })
+      .finally(() => {
+        pdfBrowserState.__jadePdfBrowserLaunch = undefined;
+      });
+    pdfBrowserState.__jadePdfBrowserLaunch = launch;
+  }
+
+  return await pdfBrowserState.__jadePdfBrowserLaunch;
+}
+
+function isRenderTimeout(error: unknown): boolean {
+  return error instanceof Error && /timed out/i.test(error.message);
 }
 
 async function launchPdfBrowser(signal?: AbortSignal): Promise<Browser> {
@@ -258,83 +346,87 @@ async function launchPdfBrowser(signal?: AbortSignal): Promise<Browser> {
 
 async function renderContinuousPage(browser: Browser, html: string): Promise<Buffer> {
   const page = await browser.newPage();
-  await patchPageForEvaluate(page);
-  await page.setViewport({ width: Math.ceil(CONTINUOUS_WIDTH_PX), height: A4_HEIGHT_PX });
-  // Measure using the same media and fixed CSS width as the final PDF.
-  await page.emulateMediaType('print');
-  await page.setContent(html, { waitUntil: 'load', timeout: CONTINUOUS_RESOURCE_TIMEOUT_MS });
-  await page.waitForFunction(
-    () =>
-      document.fonts.status === 'loaded'
-      && Array.from(document.images).every((img) => img.complete),
-    { timeout: CONTINUOUS_RESOURCE_TIMEOUT_MS },
-  );
+  try {
+    await patchPageForEvaluate(page);
+    await page.setViewport({ width: Math.ceil(CONTINUOUS_WIDTH_PX), height: A4_HEIGHT_PX });
+    // Measure using the same media and fixed CSS width as the final PDF.
+    await page.emulateMediaType('print');
+    await page.setContent(html, { waitUntil: 'load', timeout: CONTINUOUS_RESOURCE_TIMEOUT_MS });
+    await page.waitForFunction(
+      () =>
+        document.fonts.status === 'loaded'
+        && Array.from(document.images).every((img) => img.complete),
+      { timeout: CONTINUOUS_RESOURCE_TIMEOUT_MS },
+    );
 
-  const dimensions = await page.evaluate(async () => {
-    const globalScope = globalThis as { __name?: <T>(fn: T, name?: string) => T };
-    if (typeof globalScope.__name === 'undefined') {
-      globalScope.__name = <T,>(fn: T): T => fn;
-    }
-    for (const image of Array.from(document.images)) {
-      if (image.naturalWidth === 0) {
-        throw new Error('A resume image failed to load. Retry PDF export.');
+    const dimensions = await page.evaluate(async () => {
+      const globalScope = globalThis as { __name?: <T>(fn: T, name?: string) => T };
+      if (typeof globalScope.__name === 'undefined') {
+        globalScope.__name = <T,>(fn: T): T => fn;
       }
-      await image.decode();
-    }
-    const root = document.querySelector<HTMLElement>('.resume-export');
-    if (!root) throw new Error('Continuous PDF requires a resume export container');
-    const measure = () => {
-      const rect = root.getBoundingClientRect();
-      let bottom = rect.bottom;
-      for (const el of root.querySelectorAll('*')) {
-        bottom = Math.max(bottom, el.getBoundingClientRect().bottom);
+      for (const image of Array.from(document.images)) {
+        if (image.naturalWidth === 0) {
+          throw new Error('A resume image failed to load. Retry PDF export.');
+        }
+        await image.decode();
       }
-      return {
-        height: Math.max(rect.height, root.scrollHeight, bottom - rect.top),
-        width: Math.max(rect.width, root.scrollWidth),
+      const root = document.querySelector<HTMLElement>('.resume-export');
+      if (!root) throw new Error('Continuous PDF requires a resume export container');
+      const measure = () => {
+        const rect = root.getBoundingClientRect();
+        let bottom = rect.bottom;
+        for (const el of root.querySelectorAll('*')) {
+          bottom = Math.max(bottom, el.getBoundingClientRect().bottom);
+        }
+        return {
+          height: Math.max(rect.height, root.scrollHeight, bottom - rect.top),
+          width: Math.max(rect.width, root.scrollWidth),
+        };
       };
-    };
-    let previous = measure();
-    let stableFrames = 0;
-    while (stableFrames < 3) {
-      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-      const next = measure();
-      stableFrames =
-        Math.abs(next.height - previous.height) < 0.25
-        && Math.abs(next.width - previous.width) < 0.25
-          ? stableFrames + 1
-          : 0;
-      previous = next;
-    }
-    return previous;
-  });
+      let previous = measure();
+      let stableFrames = 0;
+      while (stableFrames < 3) {
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+        const next = measure();
+        stableFrames =
+          Math.abs(next.height - previous.height) < 0.25
+          && Math.abs(next.width - previous.width) < 0.25
+            ? stableFrames + 1
+            : 0;
+        previous = next;
+      }
+      return previous;
+    });
 
-  // Round up and allow 2 CSS pixels for Chromium's print-unit rounding.
-  const height = Math.ceil(dimensions.height) + 2;
-  if (!Number.isFinite(height) || height <= 2 || height > MAX_CONTINUOUS_HEIGHT_PX) {
-    throw new Error('Resume exceeds the continuous PDF height limit. Use an A4 layout instead.');
+    // Round up and allow 2 CSS pixels for Chromium's print-unit rounding.
+    const height = Math.ceil(dimensions.height) + 2;
+    if (!Number.isFinite(height) || height <= 2 || height > MAX_CONTINUOUS_HEIGHT_PX) {
+      throw new Error('Resume exceeds the continuous PDF height limit. Use an A4 layout instead.');
+    }
+    if (dimensions.width > CONTINUOUS_WIDTH_PX + 1) {
+      throw new Error('Resume exceeds the continuous PDF width. Use an A4 layout instead.');
+    }
+    await page.addStyleTag({
+      content: `
+        @page { size: ${CONTINUOUS_WIDTH_MM}mm ${height}px; margin: 0; }
+        .resume-export > div { min-height: ${height - 12}px !important; }
+      `,
+    });
+    const pdf = await page.pdf({
+      width: `${CONTINUOUS_WIDTH_MM}mm`,
+      height: `${height}px`,
+      preferCSSPageSize: true,
+      scale: 1,
+      printBackground: true,
+      margin: { top: '0', right: '0', bottom: '0', left: '0' },
+      timeout: 15_000,
+      // Fonts were already awaited under the resource and render deadlines.
+      waitForFonts: false,
+    });
+    return Buffer.from(pdf);
+  } finally {
+    await page.close().catch(() => {});
   }
-  if (dimensions.width > CONTINUOUS_WIDTH_PX + 1) {
-    throw new Error('Resume exceeds the continuous PDF width. Use an A4 layout instead.');
-  }
-  await page.addStyleTag({
-    content: `
-      @page { size: ${CONTINUOUS_WIDTH_MM}mm ${height}px; margin: 0; }
-      .resume-export > div { min-height: ${height - 12}px !important; }
-    `,
-  });
-  const pdf = await page.pdf({
-    width: `${CONTINUOUS_WIDTH_MM}mm`,
-    height: `${height}px`,
-    preferCSSPageSize: true,
-    scale: 1,
-    printBackground: true,
-    margin: { top: '0', right: '0', bottom: '0', left: '0' },
-    timeout: 15_000,
-    // Fonts were already awaited under the resource and render deadlines.
-    waitForFonts: false,
-  });
-  return Buffer.from(pdf);
 }
 
 async function renderA4Page(
@@ -343,40 +435,44 @@ async function renderA4Page(
   options: PdfOptions,
 ): Promise<Buffer> {
   const page = await browser.newPage();
-  await patchPageForEvaluate(page);
+  try {
+    await patchPageForEvaluate(page);
 
-  await page.setViewport({ width: A4_WIDTH_PX, height: A4_HEIGHT_PX });
-  await page.emulateMediaType('print');
-  await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 15_000 });
-  await page.evaluate(() => document.fonts.ready);
-  await page.evaluate(
-    () =>
-      new Promise<void>((resolve) =>
-        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-      ),
-  );
+    await page.setViewport({ width: A4_WIDTH_PX, height: A4_HEIGHT_PX });
+    await page.emulateMediaType('print');
+    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 15_000 });
+    await page.evaluate(() => document.fonts.ready);
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        ),
+    );
 
-  const fitOnePage =
-    options.layout === 'fit-one-page' || (!options.layout && options.fitOnePage);
-  await applyPaginationStrategy(page, {
-    mode: fitOnePage ? 'fit-one-page' : 'prevent-blank-page',
-    context: options.paginationContext,
-    onResult: options.onPaginationResult,
-  });
+    const fitOnePage =
+      options.layout === 'fit-one-page' || (!options.layout && options.fitOnePage);
+    await applyPaginationStrategy(page, {
+      mode: fitOnePage ? 'fit-one-page' : 'prevent-blank-page',
+      context: options.paginationContext,
+      onResult: options.onPaginationResult,
+    });
 
-  const pdf = await page.pdf({
-    format: 'A4',
-    preferCSSPageSize: true,
-    scale: 1,
-    printBackground: true,
-    margin: { top: '0', right: '0', bottom: '0', left: '0' },
-  });
-  return Buffer.from(pdf);
+    const pdf = await page.pdf({
+      format: 'A4',
+      preferCSSPageSize: true,
+      scale: 1,
+      printBackground: true,
+      margin: { top: '0', right: '0', bottom: '0', left: '0' },
+    });
+    return Buffer.from(pdf);
+  } finally {
+    await page.close().catch(() => {});
+  }
 }
 
 export async function generatePdf(html: string, options: PdfOptions = {}): Promise<Buffer> {
   options.signal?.throwIfAborted();
-  const browser = await launchPdfBrowser(options.signal);
+  const browser = await getSharedBrowser(options.signal);
   let onAbort: (() => void) | undefined;
   try {
     options.signal?.throwIfAborted();
@@ -394,8 +490,15 @@ export async function generatePdf(html: string, options: PdfOptions = {}): Promi
       CONTINUOUS_RENDER_TIMEOUT_MS,
       'PDF rendering timed out. Retry or use an A4 layout.',
     );
+  } catch (error) {
+    // A timeout or abort can leave a stuck renderer behind. Recycle the
+    // shared browser so the next export starts from a clean process.
+    if (options.signal?.aborted || isRenderTimeout(error) || !browser.connected) {
+      await closeSharedBrowser();
+    }
+    throw error;
   } finally {
     if (onAbort) options.signal?.removeEventListener('abort', onAbort);
-    await closePdfBrowser(browser);
+    if (browser.connected) scheduleIdleClose();
   }
 }

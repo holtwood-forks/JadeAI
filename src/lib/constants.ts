@@ -61,6 +61,8 @@ export const TWO_COLUMN_TEMPLATES: Record<string, { bg: string; width: string }>
 export const AUTOSAVE_DELAY = 500;
 export const MAX_UNDO_STACK = 50;
 export const MAX_RESUME_VERSIONS = 30;
+export const MAX_RESUME_SECTIONS = 50;
+export const MAX_RESUME_TITLE_LENGTH = 200;
 
 /** When true, client-supplied AI base URLs may target private/internal networks. */
 export const AI_ALLOW_PRIVATE_HOSTS_ENV = 'AI_ALLOW_PRIVATE_BASE_URL';

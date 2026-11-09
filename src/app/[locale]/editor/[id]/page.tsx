@@ -22,13 +22,15 @@ const AIChatBubble = dynamic(() =>
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { List } from "lucide-react";
 import { SettingsDialog } from '@/components/settings/settings-dialog';
-import { JdAnalysisDialog } from '@/components/editor/jd-analysis-dialog';
-import { TranslateDialog } from '@/components/editor/translate-dialog';
-import { ExportDialog } from '@/components/editor/export-dialog';
-import { ImportDialog } from '@/components/editor/import-dialog';
-import { ShareDialog } from '@/components/editor/share-dialog';
-import { CoverLetterDialog } from '@/components/editor/cover-letter-dialog';
-import { GrammarCheckDialog } from '@/components/editor/grammar-check-dialog';
+// Dialogs are opened rarely and drag in most of the Radix surface. Load each
+// one the first time its modal opens instead of shipping them all up front.
+const JdAnalysisDialog = dynamic(() => import('@/components/editor/jd-analysis-dialog').then((m) => m.JdAnalysisDialog), { ssr: false });
+const TranslateDialog = dynamic(() => import('@/components/editor/translate-dialog').then((m) => m.TranslateDialog), { ssr: false });
+const ExportDialog = dynamic(() => import('@/components/editor/export-dialog').then((m) => m.ExportDialog), { ssr: false });
+const ImportDialog = dynamic(() => import('@/components/editor/import-dialog').then((m) => m.ImportDialog), { ssr: false });
+const ShareDialog = dynamic(() => import('@/components/editor/share-dialog').then((m) => m.ShareDialog), { ssr: false });
+const CoverLetterDialog = dynamic(() => import('@/components/editor/cover-letter-dialog').then((m) => m.CoverLetterDialog), { ssr: false });
+const GrammarCheckDialog = dynamic(() => import('@/components/editor/grammar-check-dialog').then((m) => m.GrammarCheckDialog), { ssr: false });
 import { TourOverlay, type TourStepConfig } from '@/components/tour/tour-overlay';
 import { useEditorStore } from '@/stores/editor-store';
 import { useUIStore } from '@/stores/ui-store';
@@ -45,6 +47,16 @@ const EDITOR_TOUR_STEPS: TourStepConfig[] = [
   { target: 'export', placement: 'bottom', i18nKey: 'export' },
   { target: 'theme', placement: 'bottom', i18nKey: 'theme' },
 ];
+
+/** Render children on first activation, then keep them mounted so closing a
+ * dialog still animates instead of unmounting it instantly. */
+function LazyMount({ active, children }: { active: boolean; children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(active);
+  useEffect(() => {
+    if (active) setMounted(true);
+  }, [active]);
+  return mounted ? <>{children}</> : null;
+}
 
 export default function EditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -174,41 +186,55 @@ export default function EditorPage({ params }: { params: Promise<{ id: string }>
 
       <AIChatBubble resumeId={id} />
       <SettingsDialog />
-      <JdAnalysisDialog
-        open={activeModal === 'jd-analysis'}
-        onOpenChange={(open) => open ? openModal('jd-analysis') : closeModal()}
-        resumeId={id}
-      />
-      <TranslateDialog
-        open={activeModal === 'translate'}
-        onOpenChange={(open) => open ? openModal('translate') : closeModal()}
-        resumeId={id}
-      />
-      <ExportDialog
-        open={activeModal === 'export'}
-        onOpenChange={(open) => open ? openModal('export') : closeModal()}
-        resumeId={id}
-      />
-      <ImportDialog
-        open={activeModal === 'import'}
-        onOpenChange={(open) => open ? openModal('import') : closeModal()}
-        resumeId={id}
-      />
-      <ShareDialog
-        open={activeModal === 'share'}
-        onOpenChange={(open) => open ? openModal('share') : closeModal()}
-        resumeId={id}
-      />
-      <CoverLetterDialog
-        open={activeModal === 'cover-letter'}
-        onOpenChange={(open) => open ? openModal('cover-letter') : closeModal()}
-        resumeId={id}
-      />
-      <GrammarCheckDialog
-        open={activeModal === 'grammar-check'}
-        onOpenChange={(open) => open ? openModal('grammar-check') : closeModal()}
-        resumeId={id}
-      />
+      <LazyMount active={activeModal === 'jd-analysis'}>
+        <JdAnalysisDialog
+          open={activeModal === 'jd-analysis'}
+          onOpenChange={(open) => open ? openModal('jd-analysis') : closeModal()}
+          resumeId={id}
+        />
+      </LazyMount>
+      <LazyMount active={activeModal === 'translate'}>
+        <TranslateDialog
+          open={activeModal === 'translate'}
+          onOpenChange={(open) => open ? openModal('translate') : closeModal()}
+          resumeId={id}
+        />
+      </LazyMount>
+      <LazyMount active={activeModal === 'export'}>
+        <ExportDialog
+          open={activeModal === 'export'}
+          onOpenChange={(open) => open ? openModal('export') : closeModal()}
+          resumeId={id}
+        />
+      </LazyMount>
+      <LazyMount active={activeModal === 'import'}>
+        <ImportDialog
+          open={activeModal === 'import'}
+          onOpenChange={(open) => open ? openModal('import') : closeModal()}
+          resumeId={id}
+        />
+      </LazyMount>
+      <LazyMount active={activeModal === 'share'}>
+        <ShareDialog
+          open={activeModal === 'share'}
+          onOpenChange={(open) => open ? openModal('share') : closeModal()}
+          resumeId={id}
+        />
+      </LazyMount>
+      <LazyMount active={activeModal === 'cover-letter'}>
+        <CoverLetterDialog
+          open={activeModal === 'cover-letter'}
+          onOpenChange={(open) => open ? openModal('cover-letter') : closeModal()}
+          resumeId={id}
+        />
+      </LazyMount>
+      <LazyMount active={activeModal === 'grammar-check'}>
+        <GrammarCheckDialog
+          open={activeModal === 'grammar-check'}
+          onOpenChange={(open) => open ? openModal('grammar-check') : closeModal()}
+          resumeId={id}
+        />
+      </LazyMount>
       <TourOverlay tourId="editor" steps={EDITOR_TOUR_STEPS} />
     </div>
   );

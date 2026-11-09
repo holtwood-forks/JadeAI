@@ -20,7 +20,7 @@ describe('resolveUser in desktop mode', () => {
 
   async function loadWithDesktop(desktop: boolean) {
     vi.doMock('@/lib/config', () => ({
-      config: { auth: { enabled: false }, runtime: { desktop }, i18n: { defaultLocale: 'zh', locales: ['zh', 'en'] } },
+      config: { auth: { enabled: false }, runtime: { singleUser: desktop, desktop }, i18n: { defaultLocale: 'zh', locales: ['zh', 'en'] } },
     }));
     return import('./helpers');
   }
@@ -46,15 +46,14 @@ describe('resolveUser in desktop mode', () => {
     expect(ensureLocalUser).not.toHaveBeenCalled();
   });
 
-  // Pins the branch ORDER, not just the branch: the desktop check sits ahead of
-  // config.auth.enabled on purpose, so "desktop has exactly one user" cannot be
-  // defeated by an env-var combination. Without this case, moving the desktop
-  // branch below the auth branch passes the whole suite.
-  it('desktop still wins even if auth is (misconfigured to be) enabled', async () => {
+  // The combination used to let desktop mode win and serve every API without a
+  // session, which bypassed OAuth entirely. It must fail closed instead.
+  it('refuses to resolve a user when desktop mode is combined with auth', async () => {
     vi.doMock('@/lib/config', () => ({
-      config: { auth: { enabled: true }, runtime: { desktop: true }, i18n: { defaultLocale: 'zh', locales: ['zh', 'en'] } },
+      config: { auth: { enabled: true }, runtime: { singleUser: true, desktop: true }, i18n: { defaultLocale: 'zh', locales: ['zh', 'en'] } },
     }));
     const { resolveUser } = await import('./helpers');
-    expect(await resolveUser('whatever-fingerprint')).toEqual(LOCAL_USER);
+    await expect(resolveUser('whatever-fingerprint')).rejects.toThrow(/cannot be combined/);
+    expect(ensureLocalUser).not.toHaveBeenCalled();
   });
 });

@@ -23,19 +23,26 @@ type PublicResumeSource = Pick<PublicResume, 'id' | 'title' | 'template' | 'them
 };
 
 export function serializePublicResume(resume: PublicResumeSource): PublicResume {
+  // The public endpoint must not rely on the renderer to hide sections: hidden
+  // content would still be readable straight from the JSON. Drop invisible
+  // sections here, before the shape leaves the server.
+  const sections = (resume.sections ?? [])
+    .filter((section) => section.visible !== false)
+    .map((section) => ({
+      id: section.id,
+      type: section.type,
+      title: section.title,
+      sortOrder: section.sortOrder,
+      visible: true,
+      content: section.content,
+    }));
+
   return {
     id: resume.id,
     title: resume.title,
     template: resume.template,
     themeConfig: resume.themeConfig,
     language: resume.language,
-    sections: (resume.sections ?? []).map((section) => ({
-      id: section.id,
-      type: section.type,
-      title: section.title,
-      sortOrder: section.sortOrder,
-      visible: section.visible,
-      content: section.content,
-    })),
+    sections,
   };
 }

@@ -7,3 +7,13 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 onlyBuiltDependencies: better-sqlite3,@swc/core,sharp,unrs-resolver,esbuild,@parcel/watcher
+
+overrides:
+  nanoid@3: 3.3.18
+  nanoid@5: 5.1.16
+  browserslist: ^4.28.7
+  source-map-js: ^1.2.2
+  baseline-browser-mapping: ^2.11.0
+  follow-redirects: ^1.15.12
+  '@babel/core': ^7.29.1
+  '@ai-sdk/provider-utils@4': 4.0.65

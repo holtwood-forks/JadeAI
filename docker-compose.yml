@@ -1,0 +1,36 @@
+# JadeAI 个人自用 Compose 模板
+#
+#   mkdir -p data
+#   cp .env.example .env.local     # 至少修改 AUTH_SECRET
+#   docker compose up -d --build
+#
+# 只用仓库自带 Dockerfile 构建；端口、镜像名、绑定地址都可用环境变量覆盖。
+# 完整说明见 docs/deployment.md。
+
+services:
+  jadeai:
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION:-0.0.0-dev}
+    image: ${JADEAI_IMAGE:-jadeai-local:latest}
+    container_name: ${CONTAINER_NAME:-jadeai}
+    restart: unless-stopped
+    env_file:
+      - .env.local
+    ports:
+      # 默认只监听回环地址。需要局域网访问时设 BIND_ADDR=0.0.0.0，
+      # 并确认前面有防火墙或反向代理鉴权。
+      - "${BIND_ADDR:-127.0.0.1}:${HOST_PORT:-3003}:3000"
+    volumes:
+      # 绑定挂载便于用 pnpm db:backup；也可换成命名卷：
+      #   volumes: ["jadeai-data:/app/data"]
+      - ./data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # 个人自用 2 GB 足够（导出 PDF 峰值约 0.8–1.2 GB）。
+    # 宿主机内存不足时不要开启，否则 Chromium 会被 OOM kill。
+    # mem_limit: 2g

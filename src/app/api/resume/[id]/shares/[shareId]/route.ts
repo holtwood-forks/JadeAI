@@ -3,6 +3,8 @@ import { resumeRepository } from '@/lib/db/repositories/resume.repository';
 import { shareRepository } from '@/lib/db/repositories/share.repository';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
 import { hashPassword } from '@/lib/utils/share';
+import { readJsonBody, RequestBodyError } from '@/lib/http/read-json-body';
+import { MAX_SHARE_BODY_BYTES, readShareLabel, readSharePassword } from '@/lib/share/payload';
 
 export async function PATCH(
   request: NextRequest,
@@ -26,19 +28,24 @@ export async function PATCH(
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    const body = await request.json().catch(() => ({}));
-    const { label, password, isActive } = body as {
-      label?: string;
-      password?: string | null;
-      isActive?: boolean;
-    };
+    const body = await readJsonBody(request, { maxBytes: MAX_SHARE_BODY_BYTES });
+    const fields =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as { label?: unknown; password?: unknown; isActive?: unknown })
+        : {};
 
     const updates: { label?: string; password?: string | null; isActive?: boolean } = {};
-    if (label !== undefined) updates.label = label;
-    if (password !== undefined) {
+    if (fields.label !== undefined) updates.label = readShareLabel(fields.label);
+    if (fields.password !== undefined) {
+      const password = readSharePassword(fields.password);
       updates.password = password ? await hashPassword(password) : null;
     }
-    if (isActive !== undefined) updates.isActive = isActive;
+    if (fields.isActive !== undefined) {
+      if (typeof fields.isActive !== 'boolean') {
+        throw new RequestBodyError('isActive must be a boolean', 400);
+      }
+      updates.isActive = fields.isActive;
+    }
 
     const updated = await shareRepository.update(shareId, updates);
     return NextResponse.json({
@@ -47,6 +54,9 @@ export async function PATCH(
       password: undefined,
     });
   } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('PATCH /api/resume/[id]/shares/[shareId] error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

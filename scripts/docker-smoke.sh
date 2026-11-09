@@ -95,7 +95,14 @@ if [ "$needs_host_gateway" = "true" ]; then
 fi
 
 if [ "$SKIP_BUILD" != "true" ]; then
-  docker build "${build_args[@]}" -t "$IMAGE_NAME" "$ROOT_DIR"
+  # Some WSL/CI networks cannot reach package registries from the default
+  # bridge. Opt in with DOCKER_BUILD_NETWORK=host instead of changing the
+  # default for every platform.
+  build_network_args=()
+  if [ -n "${DOCKER_BUILD_NETWORK:-}" ]; then
+    build_network_args+=(--network "$DOCKER_BUILD_NETWORK")
+  fi
+  docker build "${build_network_args[@]}" "${build_args[@]}" -t "$IMAGE_NAME" "$ROOT_DIR"
 fi
 
 ENV_FILE="$(mktemp)"
@@ -116,13 +123,13 @@ docker volume create "$VOLUME_NAME" >/dev/null
 docker run -d \
   --name "$CONTAINER_NAME" \
   --env-file "$ENV_FILE" \
-  -p "${HOST_PORT}:3000" \
+  -p "127.0.0.1:${HOST_PORT}:3000" \
   -v "${VOLUME_NAME}:/app/data" \
   "$IMAGE_NAME" >/dev/null
 
 ready=false
 for _ in $(seq 1 60); do
-  if docker exec "$CONTAINER_NAME" wget -qO- http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
+  if docker exec "$CONTAINER_NAME" wget -qO- http://127.0.0.1:3000/api/ready >/dev/null 2>&1; then
     ready=true
     break
   fi
@@ -149,7 +156,7 @@ docker exec "$CONTAINER_NAME" test -f /app/data/jade.db
 docker exec "$CONTAINER_NAME" node -e '
 (async () => {
   const base = "http://127.0.0.1:3000";
-  const health = await fetch(base + "/api/health");
+  const health = await fetch(base + "/api/ready");
   if (!health.ok) throw new Error("health check failed: " + health.status);
 
   const fingerprint = "docker-smoke-" + process.pid;

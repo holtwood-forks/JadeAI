@@ -3,25 +3,27 @@
   "version": "0.8.0",
   "private": true,
   "packageManager": "pnpm@11.0.9",
-  "homepage": "https://holtwood-projects.github.io/JadeAI/",
+  "homepage": "https://holtwood-forks.github.io/JadeAI/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/holtwood-projects/JadeAI.git"
+    "url": "git+https://github.com/holtwood-forks/JadeAI.git"
   },
   "bugs": {
-    "url": "https://github.com/holtwood-projects/JadeAI/issues"
+    "url": "https://github.com/holtwood-forks/JadeAI/issues"
   },
   "scripts": {
     "dev": "next dev --turbopack",
     "build:export-css": "tsx scripts/build-export-css.ts",
     "prebuild": "pnpm build:export-css",
     "build": "next build",
+    "build:standalone": "pnpm build:export-css && NEXT_OUTPUT=standalone next build",
     "docker:build": "BUILD_ONLY=true bash ./docker_run_local.sh",
     "docker:run": "bash ./docker_run_local.sh",
     "docker:smoke": "bash ./scripts/docker-smoke.sh",
     "docker:publish": "bash ./docker_publish.sh",
     "release:check": "bash ./scripts/verify-release.sh",
     "start": "next start",
+    "start:standalone": "node .next/standalone/server.js",
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -30,16 +32,8 @@
     "db:generate:pg": "drizzle-kit generate --config drizzle-pg.config.ts",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/lib/db/seed.ts"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@swc/core",
-      "sharp",
-      "unrs-resolver",
-      "esbuild",
-      "@parcel/watcher"
-    ]
+    "db:seed": "tsx src/lib/db/seed.ts",
+    "db:backup": "tsx scripts/backup-db.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.50",
@@ -56,16 +50,16 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "docx": "^9.0.0",
-    "drizzle-orm": "^0.45.1",
+    "drizzle-orm": "^0.45.4",
     "jsonrepair": "^3.13.2",
     "lucide-react": "^0.563.0",
     "mupdf": "^1.27.0",
-    "next": "16.1.6",
-    "next-auth": "5.0.0-beta.30",
-    "next-intl": "^4.8.2",
+    "next": "16.4.5",
+    "next-auth": "5.0.0-beta.32",
+    "next-intl": "^4.14.9",
     "next-themes": "^0.4.6",
     "postgres": "^3.4.8",
-    "puppeteer-core": "^24.37.2",
+    "puppeteer-core": "^25.16.0",
     "qrcode": "^1.5.4",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
@@ -76,7 +70,7 @@
     "server-only": "^0.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
-    "zod": "^4.3.6",
+    "zod": "^4.6.7",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
@@ -90,7 +84,7 @@
     "drizzle-kit": "^0.31.9",
     "esbuild": "^0.28.2",
     "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.4.5",
     "shadcn": "^3.8.4",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",

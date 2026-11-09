@@ -30,21 +30,59 @@ JadeAI 是一个 AI 驱动的简历与求职工作台（Next.js / React / TypeSc
 - PDF 快照导出：POST 请求携带当前编辑器状态（含未保存的分节顺序），无需先保存即可导出；限制 2 MiB、10s 上传与 35s 渲染超时，并限制并发渲染为 2。
 - 导出请求支持取消与整体超时；Chromium 启动、渲染、关闭均有超时与 SIGKILL 兜底，避免挂起进程泄漏。
 - 连续长页导出会移除末尾空白页，同时保留纯图片/背景页。
+- 单用户模式新增 `JADE_SINGLE_USER=true`，固定映射到本地用户；`JADE_RUNTIME=desktop` 保留为兼容别名。
+- 新增 `JADE_HOME=dashboard`：设置后访问首页直接进入工作台，默认仍展示 landing。
+- 新增 `FEATURE_RECRUIT=false`：关闭招聘入口并将 `/recruit` 重定向到工作台，路由与数据表保留。
+- 新增 `pnpm db:backup`：使用 SQLite 在线备份生成一致性快照，默认保留 14 份。
+- PDF 导出复用共享 Chromium 实例，空闲 10 分钟自动回收并在进程退出时清理；A4/连续长页与并发闸门不变。
+- 简历预览模板改为按需加载，landing 首屏 JS 从 1371.7 KB 降至 912.8 KB。
+- 新增 `/api/ready`：校验数据库连接与 `AUTH_SECRET`，供 Docker HEALTHCHECK 与编排使用；`/api/health` 仍为纯存活探针。
+- 新增 `pnpm start:standalone`：直接运行 `node .next/standalone/server.js`，README 补充 standalone 部署说明。
+- 新增 `docker-compose.yml` 个人自用模板与 `docs/deployment.md` 部署指南（架构、配置矩阵、备份恢复、升级回滚、排障）。
+- PDF 资源占用可配置：`PDF_MAX_CONCURRENT`（默认 2，范围 1–4）与 `PDF_BROWSER_IDLE_MS`（默认 10 分钟），便于 1 GB 主机降低峰值。
+- `/fonts/*` 增加一周缓存头（此前每次访问都要重新校验 70 MB 字体）；关闭 `X-Powered-By`；`/api/health` 与 `/api/ready` 返回 `no-store`。
+- `docker:run` 增加容器日志轮转（10 MB × 3），避免长期运行写满磁盘。
 
 ### 变更
+
+- 依赖升级：`next` 16.1.6 → 16.4.5、`next-auth` 5.0.0-beta.30 → beta.32、`puppeteer-core` 24 → 25；`pnpm audit --prod` 从 8 critical / 38 high 降为 **0 已知漏洞**（传递依赖通过 `pnpm-workspace.yaml` 的 overrides 收敛）。
+- 修复 Turbopack 对 `PATH` 查找 Chromium 的全量追踪告警，standalone 产物从约 199 MB 降到约 76 MB。
+- 编辑器页把 AI 聊天面板（zod + AI SDK）与 7 个弹窗改为按需加载：首屏 JS 从约 1721 KB（506 KB gzip）降到约 1177 KB（356 KB gzip），降幅约 30%，弹窗关闭动画与聊天会话状态保持不变。
+- 升级 `eslint-config-next` 后新增的 React Compiler 规则（`set-state-in-effect`、`refs`、`immutability`、`preserve-manual-memoization`）暂时显式关闭：现有弹窗/聊天面板依赖 effect 内重置状态，逐个重构属于独立任务，不应混在依赖升级里。
 
 - 匿名模式下 AI 与简历相关接口的限流改为按客户端地址分桶，不再信任可伪造的 `x-fingerprint`；反向代理部署需设置 `TRUST_PROXY=true` 才能按真实 IP 分桶。
 - AI 模型切换改为每次发送时读取最新选择，不再受会话 transport 缓存影响。
 - 官网落地页导航新增「招聘」入口（桌面端与移动端），同步上游并补齐中英文案。
 - 同步上游至 2026-09-03：仅采纳 landing 招聘导航入口，不采纳 LaunchAI 推广徽章与 `.gitignore` 等价改写；新增 fork 维护手册 `docs/fork-notes.md` 与每周上游同步提醒 workflow。
+- 升级 drizzle-orm 0.45.4、zod 4.6.7、next-intl 4.14.9，并适配 zod 4 对 transform 输出必填的语义。
 - 构建链（tsconfig/eslint）排除 gitignored 的 AI 工具目录（`.agents/`、`agent/`、`data/`），本地全量校验不再被这些目录的脚本打断。
 - 同步上游 217 个提交，并入面试官侧招聘模块与 Electron 桌面客户端；随后移除桌面客户端，重新聚焦 Docker Web 部署。
 - README 本土化为纯中文，移除英文版与废弃的 zh-CN README，并补充 OrcaRouter 等 AI 提供商配置说明；整理仓库忽略规则，停止追踪 AI 工具产物。
 - 文档：补充 WSL 开发说明——`~/.local/bin` 中转发到 Windows `chrome.exe` 的包装脚本经实测可用于 PDF 导出（经 WSL interop 驱动）；若浏览器启动阶段挂起，再设置 `CHROME_PATH` 指向 Linux 原生浏览器。
 - 文档：新增主题色覆盖矩阵审计（`scripts/audit-theme-coverage.ts` 可再生成）：当前 40/50 模板存在字面色标题、不跟随用户主题色（首批已迁移 3 套），为主题一致性改造提供量化基线；修正 AGENTS.md 对不存在的 `docs/ARCHITECTURE.md` 的引用。
 
+### 安全
+
+- 修复 `AUTH_ENABLED=true` 与 `JADE_SINGLE_USER=true`（或 `JADE_RUNTIME=desktop`）同时设置时的鉴权绕过：此前单用户分支优先，所有接口在无会话时以 `local` 用户返回 200；现在启动即报错退出，请求路径同样失败关闭。
+- 公开分享接口不再下发 `visible: false` 的板块：隐藏内容此前虽不在页面上渲染，但可从 `/api/share/<token>` 的 JSON 直接读取。
+- 简历列表与详情接口不再返回 `shareToken` 与 `sharePassword` 哈希；分享路由改用独立的 `findByIdWithShareFields` 读取。
+- 简历写入接口限制 JSON 请求体为 2 MiB（超限返回 413），并限制标题长度与板块数量。
+- 分享链接只在 `TRUST_PROXY=true` 时信任 `X-Forwarded-Host` / `X-Forwarded-Proto`；否则使用 `PUBLIC_SITE_URL` 或请求自身 origin，避免伪造链接。
+- 分享接口的密码不再接受 `GET ?password=`：查询串会进入访问日志与 APM；密码只走 POST。
+- 分享创建/修改、用户资料与设置接口统一限制 JSON 请求体大小（8–64 KiB），密码与标签长度设上限。
+- `docker:run` 默认只绑定 `127.0.0.1`（可用 `BIND_ADDR=0.0.0.0` 覆盖），避免无登录模式直接暴露到局域网/公网。
+
 ### 修复
 
+- `.env.example` 不再默认把 `PUBLIC_SITE_URL` 指向 GitHub Pages：本地部署生成的分享链接此前会错误地指向线上站点。
+- `docker:run` 启动后等待 `/api/ready`，失败时打印容器日志；`docker:publish` 不再默认推送到上游作者的镜像命名空间，必须显式设置 `IMAGE_REPOSITORY`。
+- 发布检查脚本的临时目录清理改为不依赖 `rm -rf`，在受限 shell 中也能跑完。
+- 分享页请求改为 `cache: 'no-store'`，关闭分享或修改密码后不会继续展示浏览器缓存的旧内容。
+- 修复用户设置被写坏：`users.settings` 的默认值此前是字符串 `'{}'`，写入后变成双重编码的 `'"{}"'`，合并设置时把字符串拆成字符下标，产生 `{"0":"{","1":"}"}` 脏数据。默认值改为对象，并对历史数据做兼容解析与清理。
+- 启动时若 `AUTH_SECRET` 缺失或仍是示例占位值，会打印明确告警。
+
+- 构建：移除 `next/font/google` 的构建期网络依赖，改用本地 Inter 字体并补齐 sans/mono 回退栈；离线或受限网络下的 Docker 构建不再访问 `fonts.gstatic.com`。
+- Docker：`docker:smoke` 支持 `DOCKER_BUILD_NETWORK=host`，便于 WSL/受限网络下构建；默认 bridge 行为不变。
 - PDF 智能一页：修正字号缩放与 CSS zoom 叠加导致的过度缩小；失败时恢复原始排版并返回 `X-PDF-Fit-One-Page: failed` 响应头，客户端会提示「已按标准分页导出」，不再静默当作成功。
 - PDF 字体：预览端主题字体不再被模板内联 `font-family` 覆盖，选字体在预览与导出中保持一致。
 - 数据库迁移：修正 recruit 迁移时间戳倒序导致 drizzle 静默跳过 `recruit_jobs` 表的问题（SQLite 与 PostgreSQL）。
