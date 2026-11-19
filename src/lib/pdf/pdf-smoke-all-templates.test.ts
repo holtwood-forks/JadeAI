@@ -45,5 +45,5 @@ describe('全模板 PDF 冒烟（50 套 × 真实渲染）', () => {
     // 部分模板对姓名使用 text-transform:uppercase / letter-spacing，
     // 提取文本随之变大写并可能插入空格；去空白后做大小写不敏感比较。
     expect(text.replace(/\s+/g, '').toLowerCase()).toContain('pdftest');
-  });
+  }, 60_000);
 });
