@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { generateText, type LanguageModel } from 'ai';
 import { getModel, extractAIConfig, getJsonProviderOptions, AIConfigError, type AIConfig } from '@/lib/ai/provider';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
@@ -113,7 +114,9 @@ export async function POST(request: NextRequest) {
     const rate = checkRateLimit(getRateLimitKey('translate', user, request), { limit: 20, windowMs: 60_000 });
     if (!rate.allowed) return rateLimitResponse(rate.retryAfterSeconds);
 
-    const body = await request.json();
+    const bodyResult = await readJsonBodyOrResponse(request, 2 * 1024 * 1024);
+    if (!bodyResult.ok) return bodyResult.response;
+    const body = bodyResult.data;
     const parsed = translateInputSchema.safeParse(body);
     if (!parsed.success) {
       return new Response(

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { resolveCurrentUser } from '@/lib/auth/helpers';
 import { chatRepository } from '@/lib/db/repositories/chat.repository';
 import { resumeRepository } from '@/lib/db/repositories/resume.repository';
@@ -29,7 +30,9 @@ export async function POST(request: NextRequest) {
     const currentUser = await resolveCurrentUser({ request });
     if (!currentUser) return new Response('Unauthorized', { status: 401 });
 
-    const { resumeId } = await request.json();
+    const bodyResult = await readJsonBodyOrResponse(request, 8 * 1024);
+    if (!bodyResult.ok) return bodyResult.response;
+    const { resumeId } = bodyResult.data as { resumeId?: string };
     if (!resumeId) return new Response('Missing resumeId', { status: 400 });
 
     const session = await chatRepository.createSessionForUser({ resumeId, userId: currentUser.user.id });

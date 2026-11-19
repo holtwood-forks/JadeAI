@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { recruitRepository } from '@/lib/db/repositories/recruit.repository';
 import { updateCandidateInputSchema } from '@/lib/ai/recruit-schema';
 import { requireOwnedCandidate } from '@/lib/recruit/access';
@@ -21,7 +22,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const access = await requireOwnedCandidate(request, id);
   if ('error' in access) return access.error;
 
-  const body = await request.json();
+  const bodyResult = await readJsonBodyOrResponse(request, 1024 * 1024);
+  if (!bodyResult.ok) return bodyResult.response;
+  const body = bodyResult.data;
   const parsed = updateCandidateInputSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(

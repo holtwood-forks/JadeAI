@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { streamText, convertToModelMessages } from 'ai';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
+import { streamText, convertToModelMessages, type UIMessage } from 'ai';
 import { getModel, extractAIConfig, AIConfigError } from '@/lib/ai/provider';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
 import { interviewRepository } from '@/lib/db/repositories/interview.repository';
@@ -25,7 +26,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return new Response('Not found', { status: 404 });
     }
 
-    const { messages, roundId, model: modelId, locale = 'zh' } = await request.json();
+    const bodyResult = await readJsonBodyOrResponse(request, 2 * 1024 * 1024);
+    if (!bodyResult.ok) return bodyResult.response;
+    const { messages, roundId, model: modelId, locale = 'zh' } = bodyResult.data as {
+      // Legacy persisted messages may carry `content`; newer ones use `parts`.
+      messages: Array<{ role: string; content?: string; parts?: Array<{ type: string; text?: string }> }>;
+      roundId?: string;
+      model?: string;
+      locale?: string;
+    };
 
     // roundId comes from the request body — verify it belongs to this session
     // before writing messages/status to it (same guard as /control).
@@ -64,7 +73,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const aiConfig = await extractAIConfig(request);
     const model = getModel(aiConfig, modelId);
-    const modelMessages = await convertToModelMessages(messages);
+    const modelMessages = await convertToModelMessages(messages as UIMessage[]);
 
     if (round.status === 'pending') {
       await interviewRepository.updateRoundStatus(roundId, 'in_progress');

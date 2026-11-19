@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
 import { interviewRepository } from '@/lib/db/repositories/interview.repository';
 import { dbReady } from '@/lib/db';
@@ -15,7 +16,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const { messageId, marked } = await request.json();
+  const bodyResult = await readJsonBodyOrResponse(request, 8 * 1024);
+  if (!bodyResult.ok) return bodyResult.response;
+  const { messageId, marked } = bodyResult.data as { messageId?: unknown; marked?: unknown };
   if (typeof messageId !== 'string' || typeof marked !== 'boolean') {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }

@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { streamText, stepCountIs, consumeStream, type UIMessage } from 'ai';
 import { getModel, extractAIConfig, AIConfigError } from '@/lib/ai/provider';
 import { resolveCurrentUser } from '@/lib/auth/helpers';
@@ -198,6 +199,8 @@ export async function POST(request: NextRequest) {
     const rate = checkRateLimit(getRateLimitKey('chat', user, request), { limit: 20, windowMs: 60_000 });
     if (!rate.allowed) return rateLimitResponse(rate.retryAfterSeconds);
 
+    const bodyResult = await readJsonBodyOrResponse(request, 2 * 1024 * 1024);
+    if (!bodyResult.ok) return bodyResult.response;
     const {
       messages,
       resumeId,
@@ -205,14 +208,14 @@ export async function POST(request: NextRequest) {
       sessionId,
       trigger,
       messageId,
-    }: {
+    } = bodyResult.data as {
       messages: UIMessage[];
       resumeId?: string;
       model?: string;
       sessionId?: string;
       trigger?: 'submit-message' | 'regenerate-message';
       messageId?: string;
-    } = await request.json();
+    };
     persistedSessionId = sessionId;
     const isRegenerateRequest = trigger === 'regenerate-message';
     const regenerateTargetMessageId = isRegenerateRequest

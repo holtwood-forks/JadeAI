@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_JSON_BODY_BYTES, readJsonBody } from './read-json-body';
+import { MAX_JSON_BODY_BYTES, readJsonBody, readJsonBodyOrResponse } from './read-json-body';
 
 function jsonRequest(body: string, headers: Record<string, string> = {}) {
   return new Request('http://localhost/api/resume', {
@@ -40,5 +40,28 @@ describe('readJsonBody', () => {
   it('rejects a missing body', async () => {
     const request = new Request('http://localhost/api/resume', { method: 'POST' });
     await expect(readJsonBody(request)).rejects.toMatchObject({ status: 400 });
+  });
+});
+
+describe('readJsonBodyOrResponse', () => {
+  it('returns data for a valid body', async () => {
+    const result = await readJsonBodyOrResponse(jsonRequest('{"title":"x"}'), 1024);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.data).toEqual({ title: 'x' });
+  });
+
+  it('returns a 413 response instead of throwing', async () => {
+    const result = await readJsonBodyOrResponse(jsonRequest('{"a":1}'), 4);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.response.status).toBe(413);
+      await expect(result.response.json()).resolves.toMatchObject({ error: 'Request body too large' });
+    }
+  });
+
+  it('returns a 400 response for invalid JSON', async () => {
+    const result = await readJsonBodyOrResponse(jsonRequest('{'), 1024);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.response.status).toBe(400);
   });
 });

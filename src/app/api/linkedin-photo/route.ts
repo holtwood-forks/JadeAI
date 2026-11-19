@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { resolveCurrentUser } from '@/lib/auth/helpers';
 import { checkRateLimit, rateLimitResponse, getRateLimitKey } from '@/lib/rate-limit';
 
@@ -16,8 +17,14 @@ export async function POST(request: NextRequest) {
     if (!rate.allowed) return rateLimitResponse(rate.retryAfterSeconds);
 
     const apiKey = request.headers.get('x-api-key');
-    const body = await request.json();
-    const { image, prompt, requirements, aspectRatio } = body;
+    const bodyResult = await readJsonBodyOrResponse(request, 8 * 1024 * 1024);
+    if (!bodyResult.ok) return bodyResult.response;
+    const { image, prompt, requirements, aspectRatio } = bodyResult.data as {
+      image?: unknown;
+      prompt?: string;
+      requirements?: string;
+      aspectRatio?: string;
+    };
 
     if (!apiKey) {
       return NextResponse.json(
@@ -34,7 +41,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Build final prompt with aspect ratio and requirements
-    let finalPrompt = prompt;
+    let finalPrompt = prompt ?? '';
     if (aspectRatio && aspectRatio !== '1:1') {
       finalPrompt += `\n\nOutput image aspect ratio: ${aspectRatio} (width:height).`;
     }

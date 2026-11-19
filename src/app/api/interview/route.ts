@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
+import type { InterviewerConfig } from '@/types/interview';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
 import { interviewRepository } from '@/lib/db/repositories/interview.repository';
 import { resumeRepository } from '@/lib/db/repositories/resume.repository';
@@ -22,8 +24,14 @@ export async function POST(request: NextRequest) {
   const user = await resolveUser(fingerprint);
   if (!user) return new Response('Unauthorized', { status: 401 });
 
-  const body = await request.json();
-  const { jobDescription, jobTitle, resumeId, interviewers } = body;
+  const bodyResult = await readJsonBodyOrResponse(request, 512 * 1024);
+  if (!bodyResult.ok) return bodyResult.response;
+  const { jobDescription, jobTitle, resumeId, interviewers } = bodyResult.data as {
+    jobDescription?: string;
+    jobTitle?: string;
+    resumeId?: string;
+    interviewers?: Array<Record<string, unknown> & { type?: string }>;
+  };
 
   if (!jobDescription || !jobTitle || !Array.isArray(interviewers) || interviewers.length === 0) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -42,6 +50,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Too many interviewers' }, { status: 400 });
   }
 
+  // Shape is validated above; the repository expects the full config object.
+  const selectedInterviewers = interviewers as unknown as InterviewerConfig[];
+
   if (resumeId) {
     const resume = await resumeRepository.findByIdForUser(resumeId, user.id);
     if (!resume) {
@@ -54,15 +65,15 @@ export async function POST(request: NextRequest) {
     resumeId: resumeId || undefined,
     jobDescription,
     jobTitle,
-    selectedInterviewers: interviewers,
+    selectedInterviewers,
   });
 
   try {
-    for (let i = 0; i < interviewers.length; i++) {
+    for (let i = 0; i < selectedInterviewers.length; i++) {
       await interviewRepository.createRound({
         sessionId: session!.id,
-        interviewerType: interviewers[i].type,
-        interviewerConfig: interviewers[i],
+        interviewerType: selectedInterviewers[i].type,
+        interviewerConfig: selectedInterviewers[i],
         sortOrder: i,
       });
     }

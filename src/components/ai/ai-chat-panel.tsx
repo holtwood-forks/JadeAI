@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { X, Sparkles, Plus, Trash2, Clock, MessageSquare } from 'lucide-react';
+import { Sparkles, Plus, Trash2, Clock, MessageSquare } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -656,25 +656,5 @@ export function AIChatContent({ resumeId, hideTitle }: AIChatContentProps) {
         onStop={stopStreaming}
       />
     </>
-  );
-}
-
-/** Side-panel wrapper (backward compat) */
-export function AIChatPanel({ resumeId }: { resumeId: string }) {
-  const { toggleAiChat } = useEditorStore();
-
-  return (
-    <div className="flex w-80 shrink-0 flex-col overflow-hidden border-l bg-white">
-      <AIChatContent resumeId={resumeId} />
-      {/* Close button overlaid on the header */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="absolute right-1 top-1 h-7 w-7 cursor-pointer p-0"
-        onClick={toggleAiChat}
-      >
-        <X className="h-4 w-4" />
-      </Button>
-    </div>
   );
 }

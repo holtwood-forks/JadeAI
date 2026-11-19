@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { recruitRepository } from '@/lib/db/repositories/recruit.repository';
 import { createJobInputSchema } from '@/lib/ai/recruit-schema';
 import { requireUser } from '@/lib/recruit/access';
@@ -20,7 +21,9 @@ export async function POST(request: NextRequest) {
   const auth = await requireUser(request);
   if ('error' in auth) return auth.error;
 
-  const body = await request.json();
+  const bodyResult = await readJsonBodyOrResponse(request, 256 * 1024);
+  if (!bodyResult.ok) return bodyResult.response;
+  const body = bodyResult.data;
   const parsed = createJobInputSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(

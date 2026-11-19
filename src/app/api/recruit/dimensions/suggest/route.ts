@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { generateText } from 'ai';
 import { extractJson } from '@/lib/ai/extract-json';
 import { dimensionSuggestionsOutputSchema } from '@/lib/ai/recruit-schema';
@@ -22,7 +23,9 @@ export async function POST(request: NextRequest) {
     if ('error' in auth) return auth.error;
     const rate = checkRateLimit(getRateLimitKey('recruit-dimensions-suggest', auth.user, request), { limit: 10, windowMs: 60_000 });
     if (!rate.allowed) return rateLimitResponse(rate.retryAfterSeconds);
-    const body = await request.json();
+    const bodyResult = await readJsonBodyOrResponse(request, 256 * 1024);
+    if (!bodyResult.ok) return bodyResult.response;
+    const body = bodyResult.data as { title?: unknown; jobDescription?: unknown };
     const title = typeof body.title === 'string' ? body.title.trim() : '';
     const jobDescription = typeof body.jobDescription === 'string' ? body.jobDescription.trim() : '';
     if (!title || !jobDescription) {

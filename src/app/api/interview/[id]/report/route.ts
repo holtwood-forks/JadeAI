@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { generateText } from 'ai';
 import { getModel, extractAIConfig, AIConfigError, getJsonProviderOptions } from '@/lib/ai/provider';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
@@ -58,7 +59,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const existing = await interviewRepository.findReportBySessionId(sessionId);
     if (existing) return NextResponse.json(existing);
 
-    const { model: modelId, locale = 'zh' } = await request.json();
+    const bodyResult = await readJsonBodyOrResponse(request, 16 * 1024);
+    if (!bodyResult.ok) return bodyResult.response;
+    const { model: modelId, locale = 'zh' } = bodyResult.data as { model?: string; locale?: string };
     const aiConfig = await extractAIConfig(request);
     const model = getModel(aiConfig, modelId);
 

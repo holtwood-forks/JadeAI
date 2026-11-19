@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
 import { interviewRepository } from '@/lib/db/repositories/interview.repository';
 import { dbReady } from '@/lib/db';
@@ -45,7 +46,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const { status } = await request.json();
+  const bodyResult = await readJsonBodyOrResponse(request, 8 * 1024);
+  if (!bodyResult.ok) return bodyResult.response;
+  const { status } = bodyResult.data as { status?: unknown };
   // Status must be one of the valid session states — validating here stops
   // arbitrary strings from being stored (SQLite doesn't enforce the enum).
   const VALID_STATUSES: InterviewSessionStatus[] = ['preparing', 'in_progress', 'paused', 'completed'];

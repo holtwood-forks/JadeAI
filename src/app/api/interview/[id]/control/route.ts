@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
 import { interviewRepository } from '@/lib/db/repositories/interview.repository';
 import { buildHintPrompt, buildSkipPrompt } from '@/lib/ai/interview-prompts';
@@ -17,7 +18,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const { action, roundId, locale = 'zh' } = await request.json();
+  const bodyResult = await readJsonBodyOrResponse(request, 16 * 1024);
+  if (!bodyResult.ok) return bodyResult.response;
+  const { action, roundId, locale = 'zh' } = bodyResult.data as {
+    action?: string;
+    roundId?: string;
+    locale?: string;
+  };
 
   // roundId comes from the request body — it must belong to this session,
   // otherwise any user could flip or inject messages into other users' rounds.

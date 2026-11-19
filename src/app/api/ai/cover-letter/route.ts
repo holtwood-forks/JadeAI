@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { readJsonBodyOrResponse } from '@/lib/http/read-json-body';
 import { generateText } from 'ai';
 import { getModel, extractAIConfig, AIConfigError } from '@/lib/ai/provider';
 import { resolveUser, getUserIdFromRequest } from '@/lib/auth/helpers';
@@ -74,7 +75,9 @@ export async function POST(request: NextRequest) {
     const rate = checkRateLimit(getRateLimitKey('cover-letter', user, request), { limit: 20, windowMs: 60_000 });
     if (!rate.allowed) return rateLimitResponse(rate.retryAfterSeconds);
 
-    const body = await request.json();
+    const bodyResult = await readJsonBodyOrResponse(request, 512 * 1024);
+    if (!bodyResult.ok) return bodyResult.response;
+    const body = bodyResult.data;
     const parsed = coverLetterInputSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(

@@ -55,3 +55,26 @@ export async function readJsonBody(
     throw new RequestBodyError('Invalid JSON body', 400);
   }
 }
+
+/** Non-throwing variant for routes that have no try/catch around body parsing.
+ *  Returns a ready-to-return 400/413 response instead of throwing. */
+export type JsonBodyReadResult =
+  | { ok: true; data: unknown }
+  | { ok: false; response: Response };
+
+export async function readJsonBodyOrResponse(
+  request: Request,
+  maxBytes: number,
+): Promise<JsonBodyReadResult> {
+  try {
+    return { ok: true, data: await readJsonBody(request, { maxBytes }) };
+  } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return {
+        ok: false,
+        response: Response.json({ error: error.message }, { status: error.status }),
+      };
+    }
+    throw error;
+  }
+}
